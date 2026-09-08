@@ -9,7 +9,31 @@ list. References are one level deep from `SKILL.md`.
 
 ## Folder Layout (full)
 
-All documentation lives under `docs/`:
+### Artifacts directory (user-configurable, overrides `docs/`)
+
+Pipeline artifacts live under an **artifacts directory** that defaults to
+`docs/`. The user may override it with any repo-relative directory (e.g.
+`documentation/`, `.project/`, `spec/`); that choice replaces `docs/` as the
+root for **every** artifact path in this skill and this reference.
+
+- **Where it is chosen:** Step 0 asks once (default `docs/`) and, when the
+  choice is non-default, records it in `AGENTS.md` so every later run and
+  every agent uses the same directory. If `AGENTS.md` already records one,
+  reuse it — do not re-ask.
+- **What it covers:** everything written as `docs/…` below —
+  `docs/terminology.md`, `docs/features/`, `docs/domain-model/`,
+  `docs/logs/`, `docs/architecture/`, `docs/mechanisms/`, and the per-folder
+  `index.md` files. Read every `docs/…` path in this file as
+  `<artifacts-dir>/…`.
+- **What never moves:** `AGENTS.md`, `README.md`, and the gitignored `tmp/`
+  stay at the repository root regardless of the artifacts directory.
+- **Delegates:** `isdd`, `domain-model`, and any artifact-writing delegate
+  must write under `<artifacts-dir>` instead of `docs/`.
+
+The rest of this file uses `docs/` as the concrete default; substitute the
+chosen artifacts directory wherever it appears.
+
+All pipeline artifacts live under the artifacts directory (default `docs/`):
 
 ```
 docs/
@@ -403,16 +427,21 @@ implementation rather than after mistakes.
 Code changes in this repository go through these gates. The record lives
 in the files named below — not in an agent skill.
 
+**Artifacts directory:** pipeline artifacts live under `<artifacts-dir>/`
+(default `docs/`; state the chosen directory here if different). Paths below
+are relative to it. `AGENTS.md`, `README.md`, and `tmp/` stay at the repo
+root.
+
 0. AGENTS.md (this file) — read first
-1. Intent spec — `docs/features/<feature>/spec.md`
+1. Intent spec — `<artifacts-dir>/features/<feature>/spec.md`
 2. Intent drift — confirm with the developer before updating the spec
-3. Terminology — `docs/terminology.md` (source of truth for vocabulary)
-4. Domain model — `docs/domain-model/`
-5. Implementation plan — `docs/features/<feature>/plan.md`
+3. Terminology — `<artifacts-dir>/terminology.md` (source of truth for vocabulary)
+4. Domain model — `<artifacts-dir>/domain-model/`
+5. Implementation plan — `<artifacts-dir>/features/<feature>/plan.md`
 6. Design — UI/UX only; before implementation
 7. Plan drift — update the plan before implementing
 8. Implement
-9. Log — after implementation (`docs/logs/<feature>.md`)
+9. Log — after implementation (`<artifacts-dir>/logs/<feature>.md`)
 10. Repo README — after implementation, if user-facing
 11. Architecture and mechanisms — after implementation, if applicable
 12. AGENTS.md review — re-read this file to verify compliance
@@ -439,6 +468,10 @@ in the files named below — not in an agent skill.
   command unless the developer's message clearly requests that action.
 - **Each step's applicability is independent.** "Step 1 didn't need
   changes" does not mean "Step 5 can be skipped."
+- **Artifacts directory.** Pipeline artifacts live under `<artifacts-dir>/`
+  (default `docs/`). Use the directory recorded above for every artifact
+  path; do not scatter them elsewhere. `AGENTS.md`, `README.md`, and `tmp/`
+  stay at the repo root.
 
 ## Behavioral Guidelines
 
@@ -476,8 +509,11 @@ rather than after mistakes.
 
 ## Doc Layout
 
+Artifacts live under `<artifacts-dir>/` (default `docs/`; if this repo uses a
+different directory, state it here):
+
 \`\`\`
-docs/
+<artifacts-dir>/          ← default: docs/
   terminology.md          ← source of truth for vocabulary
   features/<feature>/    ← spec.md, plan.md
   domain-model/concepts/  ← concept .md files + index.md
@@ -486,7 +522,7 @@ docs/
   architecture/           ← decision docs + index.md
   mechanisms/             ← runtime behavior docs + index.md
 \`\`\`
-tmp/                      ← gitignored debug/scratch artifacts (outside docs/)
+tmp/                      ← gitignored debug/scratch artifacts (outside the artifacts dir)
 
 ## As the Last Step
 

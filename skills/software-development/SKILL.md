@@ -23,6 +23,28 @@ domain model, plan, design, and logs stay in sync.
 request may touch code, then stop and ask. Do not run the pipeline or write
 code until they confirm.
 
+## User controls every step (confirm or skip)
+
+**Steps do not run automatically. Before each step (0–12), stop, tell the
+user what the step will do and which artifact it produces, and ask them to
+confirm it, skip it, or modify it.** Only run the step after they confirm.
+The user chooses which steps run.
+
+- **Ask per step, in order.** State the step, its purpose, and its output,
+  then wait. Do not batch several steps into one "shall I proceed?" — each
+  step gets its own confirm/skip choice.
+- **User skip always wins.** If the user skips a step, skip it — even when
+  that contradicts the mandatory-gate rules below ("gates block code",
+  "bug fixes are not exempt", "selective compliance is non-compliance").
+  Those rules describe the *default* pipeline; an explicit user skip
+  overrides them. Note the skip (one line) so the log records what was
+  skipped.
+- **Blanket choices are allowed.** If the user says "run everything" or
+  "skip all docs, just implement," honor it without re-asking each step; if
+  they later change their mind, resume per-step asking.
+- **Confirm-before-use still applies.** The initial "may I use this skill"
+  confirmation is separate from and precedes the per-step asks.
+
 ## Load this skill FIRST
 
 This skill is the orchestrator. It must be loaded **before** any other
@@ -84,6 +106,10 @@ chain is a separate pipeline run (full)".
   Step 8 implement-vs-tutorials asks (app code and tests). Those stay in this skill.
 - **Before this skill is used, the user needs to confirm.** Do not start
   Step 0 until they say yes.
+- **Confirm or skip each step with the user.** Steps do not run
+  automatically — ask before each one and let the user confirm, skip, or
+  modify it. A user's explicit skip overrides the mandatory-gate rules for
+  that step; record what was skipped.
 - **Never use git tools unless the developer has asked explicitly.** Do not
   run `git status`, `git diff`, `git add`, `git commit`, `git restore`,
   `git mv`, or any other git command unless the developer's message clearly
@@ -139,17 +165,47 @@ than after mistakes.
 
 ## Folder Layout
 
-All documentation lives under `docs/` (see `reference.md` → "Folder Layout
-(full)"). Root: `AGENTS.md`, `README.md`, gitignored `tmp/` for scratch —
-never under `docs/`. Architecture = decision; mechanisms = runtime process.
+Pipeline artifacts (terminology, domain model, feature specs/plans, logs,
+architecture, mechanisms) live under an **artifacts directory** that
+defaults to `docs/` (see `reference.md` → "Folder Layout (full)"). Root:
+`AGENTS.md`, `README.md`, gitignored `tmp/` for scratch — never under the
+artifacts directory. Architecture = decision; mechanisms = runtime process.
+
+### Artifacts directory (user-configurable, overrides `docs/`)
+
+The user may choose a different directory to store pipeline artifacts in the
+repo; that choice **overrides the default `docs/`**.
+
+- **Ask once, early.** At the start of a run (after confirm-before-use,
+  around Step 0), ask where pipeline artifacts should live, offering `docs/`
+  as the default. If they name a directory (e.g. `documentation/`,
+  `.project/`, `spec/`), use it as the artifacts root for **every** step;
+  if they accept the default or don't care, use `docs/`.
+- **Applies to all artifact paths.** Everywhere this skill or `reference.md`
+  writes `docs/…` for a pipeline artifact — `docs/terminology.md`,
+  `docs/features/<feature>/`, `docs/domain-model/`, `docs/logs/`,
+  `docs/architecture/`, `docs/mechanisms/` — read it as
+  `<artifacts-dir>/…`, where `<artifacts-dir>` is the chosen directory
+  (default `docs/`). `AGENTS.md`, `README.md`, and `tmp/` stay at the repo
+  root regardless.
+- **Record the choice.** When it is not the default, record the chosen
+  artifacts directory in `AGENTS.md` (Step 0) so the location is part of the
+  repo contract and every later run and agent uses the same directory.
+  Reuse an existing repo's already-chosen directory instead of re-asking.
+- **Delegates follow it too.** Tell `isdd`, `domain-model`, and any
+  artifact-writing delegate to use `<artifacts-dir>` instead of `docs/`
+  when their paths would otherwise be under `docs/`.
 
 ## Confirm before use
 
 **Before this skill is used, the user needs to confirm.** Wait. Do not
 explore, edit, or write docs until they say yes. If they decline, stop.
 
-Then always: Steps 0–7, then Step 8 (ask implement vs tutorials for app
-code, then for tests), then Steps 9–12 after implementation is done. Detail:
+Once they say yes, walk the pipeline in order but **confirm or skip each
+step with the user** (see "User controls every step" above). The default
+sequence is Steps 0–7, then Step 8 (ask implement vs tutorials for app code,
+then for tests), then Steps 9–12 after implementation. The user may skip any
+of these; an explicit skip wins over the gate rules and is recorded. Detail:
 `reference.md` → "Step 8: Implement or tutorials".
 
 ## Repos are not dependent on this skill
@@ -182,28 +238,42 @@ again this session. Do not add graphify to the repo. Full commands:
 
 ## Pipeline Overview
 
+Before each step below, confirm or skip it with the user; an explicit skip
+overrides the gate and is recorded.
+
+Artifact paths below use `<artifacts-dir>/` — the user-chosen artifacts
+directory, defaulting to `docs/` (see "Artifacts directory" above).
+
 ```
  C. Confirm             → user must confirm before this skill is used
- 0. AGENTS.md           → create/read AGENTS.md at repo root (read first)
- 1. Intent Spec          → isdd skill                (docs/features/<feature>/spec.md)
+                          then confirm/skip each step below, in order
+ 0. AGENTS.md           → create/read AGENTS.md at repo root (read first);
+                          ask/record the artifacts dir (default docs/)
+ 1. Intent Spec          → isdd skill                (<artifacts-dir>/features/<feature>/spec.md)
  2. Intent Drift         → confirm with user before updating spec
- 3. Terminology          → docs/terminology.md       (source of truth for vocabulary)
- 4. Domain Model         → domain-model skill        (docs/domain-model/)
- 5. Implementation Plan                             (docs/features/<feature>/plan.md)
+ 3. Terminology          → <artifacts-dir>/terminology.md   (source of truth for vocabulary)
+ 4. Domain Model         → domain-model skill        (<artifacts-dir>/domain-model/)
+ 5. Implementation Plan                             (<artifacts-dir>/features/<feature>/plan.md)
  6. Design               → huashu-design skill       (UI/UX/front-end only)
  7. Plan Drift           → update plan before implementing
  8. Implement            → ask app: agent or tutorials; then ask tests the same way
- 9. Log                  → create/update AFTER implementation (docs/logs/<feature>.md)
+ 9. Log                  → create/update AFTER implementation (<artifacts-dir>/logs/<feature>.md)
 10. Repo README          → update README.md AFTER implementation if user-facing
 11. Architecture &       → update AFTER implementation if foundational decision or
     Mechanisms             subsystem runtime behavior changed
 12. AGENTS.md Review     → re-read AGENTS.md, verify pipeline compliance
 ```
 
-Every step has a gate — **a hard stop that blocks the next step.** "Mandatory"
-means you stop and do it before moving on, not "recommended." Treating this
-skill as background reference rather than blocking gates is a failure.
-Steps 9–12 wait until Step 8 is done.
+Every step has a gate — **a hard stop that blocks the next step.** By default
+"mandatory" means you stop and do it before moving on, not "recommended."
+Treating this skill as background reference rather than blocking gates is a
+failure. Steps 9–12 wait until Step 8 is done.
+
+**But the user decides which steps run.** Before each step, ask them to
+confirm, skip, or modify it (see "User controls every step"). A step the
+user skips is skipped — an explicit skip overrides these gate rules — and the
+skip is recorded (one line, surfaced in the Step 9 log). Absent an explicit
+skip, the default is to run the step.
 
 ### If your context was compressed
 
@@ -229,13 +299,21 @@ touched.
 - Already documents the process without skills → verify artifacts and
   rules; keep it free of this skill.
 
+**Artifacts directory:** as part of Step 0, settle where pipeline artifacts
+live. If `AGENTS.md` already records an artifacts directory, reuse it. If
+not, ask the user (default `docs/`); if they choose a non-default directory,
+record it in `AGENTS.md` and use it for every artifact path this run. Only
+`docs/` (or the chosen directory) moves — `AGENTS.md`, `README.md`, and
+`tmp/` stay at the repo root.
+
 The AGENTS.md must state it is read first; summarize Steps 0–12 as **files
 and actions**; list the key rules that belong to the repo (gates block
 code, each change a separate run, bug fixes not exempt, tests required,
 terminology wins, never change terminology without developer approval,
-English code and docs, never use git unless asked); describe `docs/`;
-state Step 12 re-reads it. It must **not** name this skill, delegates,
-graphify, confirm-before-use, or the Step 8 ask.
+English code and docs, never use git unless asked); describe the artifacts
+directory (default `docs/`, or the chosen override) and its layout; state
+Step 12 re-reads it. It must **not** name this skill, delegates, graphify,
+confirm-before-use, or the Step 8 ask.
 
 ### Per-agent instruction files
 
@@ -473,7 +551,8 @@ exist, and maintain `docs/logs/index.md`.
 Use the log format in `reference.md` → "Step 9: Log format" (plan
 implementation status table, summary of changes, deviations from plan, files
 touched, tests, recommended follow-ups) and the `docs/logs/index.md` format
-there. **Rules:** one log file per feature, updated on each pass (no
+there. **Record any steps the user chose to skip** (which step, and that the
+user requested the skip) so the pipeline record is honest about what ran. **Rules:** one log file per feature, updated on each pass (no
 `<feature>-v2.md`); omit empty sections; note deviations under `## Deviations
 from plan` and ensure `plan.md` was updated in Step 7; update the
 `docs/logs/index.md` row. **Never write the log before the code exists** —
@@ -521,16 +600,19 @@ Fix gaps before done. Note AGENTS.md edits in the log.
 ## Failure Modes to Avoid (summary)
 
 Full list in `reference.md` → "Failure Modes to Avoid." Never: use this
-skill without confirmation; write this skill into `AGENTS.md`; skip Steps
-0–7 before code or tutorials; skip either Step 8 ask (app or tests); run
-Steps 9–12 before tests are done; skip e2e when the change has a
-user-visible flow; put a developer learning
-path in README or `docs/`; document gitignored paths; silent spec rewrite;
-skip terminology/domain model/design (UI)/log; dump the tree instead of
-graphify (or skip asking to install the CLI); edit terminology or use git
-without an explicit ask; stale
-README when Step 10 applies; hand-patch delegate output; skip AGENTS.md
-review.
+skill without confirmation; **run steps automatically without confirming or
+skipping each one with the user**; write this skill into `AGENTS.md`; skip
+Steps 0–7 before code or tutorials *on your own initiative*; skip either
+Step 8 ask (app or tests); run Steps 9–12 before tests are done; skip e2e
+when the change has a user-visible flow; put a developer learning path in
+README or `docs/`; document gitignored paths; silent spec rewrite; skip
+terminology/domain model/design (UI)/log *without the user asking*; dump the
+tree instead of graphify (or skip asking to install the CLI); edit
+terminology or use git without an explicit ask; stale README when Step 10
+applies; hand-patch delegate output; skip AGENTS.md review *unasked*.
+
+**Not a failure:** skipping a step because the **user** asked to. An explicit
+user skip overrides the gate — honor it and record it in the log.
 
 ## Additional resources
 
