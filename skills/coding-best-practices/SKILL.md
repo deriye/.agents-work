@@ -46,6 +46,7 @@ Do not create empty folders “for later.” Do not copy an enterprise starter�
 
 | Stack | File |
 |---|---|
+| Python (package + CLI) | [python.md](python.md) |
 | React + Vite + TypeScript | [react-vite.md](react-vite.md) |
 | PostgreSQL + `pg` | [postgres.md](postgres.md) |
 | Express + multer | [express.md](express.md) |
