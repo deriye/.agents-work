@@ -1,0 +1,590 @@
+In the previous video we started building the control logic for a computer
+And we started by building a counter that counts through each step of our
+Instruction cycle at each instruction that we that we want to define for a computer whether it's load a [add]
+Output each of those instructions is made up of you know up to five or really oh
+It's always five old sometimes the last steps don't do anything
+But they all five different micro instructions and this counter counts through from zero to four to keep track of which step
+We're on and what we saw is that?
+[for] T0 and T1 those first two steps of the micro instruction those are always the same regardless of which instruction
+We're actually trying to execute because those two steps are the steps that fetched the instruction from memory
+And put it into the instruction register and so in fact
+We're able to sort of temporarily wire those up just by you know manually connecting you know these these signals for T0 and t1
+through through an inverter to the appropriate
+logic signals here on the control
+[electrical] word, but what I want to do in this video is replace this kind of temporary
+You know demonstration here for those first two steps with logic that's going to be able to carry out all of the steps for any
+instruction that we might want the computer to be able to do and so in order to sort of
+Understand how that's going to work. There's really kind of [two] pieces of information that feed into what?
+Control signals need to be active at any point in time
+and one of those pieces of information is which step we're on here so which of which of these time steps were on so
+And that's what we're doing now. We're on t 0 or t 1 we have signals that indicate that
+But that's one piece of information, and so you know we're where we are in this count is one piece of information
+but then the other piece of information once we get into t 2 t 3 and t 4
+It's going to be different based on which instruction
+we're actually executing and so that piece of information is here in the instruction register because by the time we get to [t] 2
+These first two steps will have loaded the appropriate instruction
+So if the instruction is load a you know that instruction is [zero] [zero] [zero] [one] will have a zero zero zero one
+sitting in the instruction register, so we have that information here, so
+All of the information we need in order to be able to set all of the control signals appropriately is
+Available in a combination of what's in the instruction register?
+plus
+Where we are in our in our count, so where we are in the actual instruction cycle
+So one way to look at what we've [got] so far
+For time t 0 and t 1 we're saying for t 0 we're doing counter out in memory address register
+In and that actually doesn't matter which instruction, we're executing because really at this point in the process we don't even know what instruction
+We're executing we have to fetch it for memory first, so [teezer]
+We're doing these things so [another] way to look at that is kind of with a truth table here where we say
+We [have] the instruction which instruction is loaded which is 4 bits
+And then we have the step which [is] 3 bits and that counts from 0 to 4 in binary?
+because each instruction cycle is is 5 clock cycles long and
+So another way to kind of look at this is to say well
+Regardless of what instruction so we don't care what's in the instruction [register] for Step 0?
+We want to do counter out and memory address register in
+So in other words our control word over here is going to look like this. We're [going] [to] have [a] counter out
+We're gonna have that is a 1 and?
+then memory address register in is also going to be a 1 and then the rest of these are all going to be zeros and
+[so] that's what our control word looks like
+Whenever we're at time T0. Where its depth 0 regardless of what instructions. It's not the same thing
+We're saying here so t0 doesn't matter what instruction. Those [2] bits are set
+Now time T1. We have the 3 bits set so [ram] out
+So we're taking the contents of ram instruction register in we're putting that content into the instruction register
+and then we're also incrementing the program counter so counter enable and
+so again at
+Time T1 where it work step one here doesn't matter what instruction because this is the same for every instruction or execution
+In this case we have ram out is
+Set to 1 and then instruction register in is set to a1 so we're moving
+contents from Ram into the instruction register
+and then were also incrementing the counter so counter enabled is over here at the program Counter and
+Then the rest of these are zeros a little carried away and added an extra 0 there last time [would]
+I forgot. [I'd] left a little blank there
+So this is essentially what we've got now
+Right so step [0] we're doing this this thing and step [1] we're doing this other thing
+So now where it gets interesting is at this point after we've gone through these first two steps the instruction register
+Now actually has the the instruction in it and so for example. [if] our program here was load a 14
+The instruction register the instruction for that is 0 0 0 1 that's that's the instruction for Load a which
+You know we just made that up, [but] that's that's what we're saying load a is
+and then the the number the last four bits here is the is the
+You know operand for this or it's a memory address location on we're loading data from [in] [to] the a register
+But what shows up in the first four bits, so the destruction register is there a 0 0 1?
+so in that case we have
+0 0 0 1 in our instruction register
+for the next three steps so that's going to be step 0 1 0
+0 1 [1] and then 1 0 0 and then once the this
+Step counter here gets to gets to 4 it resets back to 0 which we saw in the last video
+And so in this case since we [have] 0 0 0 1 in our instruction
+Register we know that we're going to be doing a load a because that's that's load a and so
+The the steps for Load a which we talked about in a previous video is
+we want to take the contents of the instruction register out and
+Memory address register in so we're essentially
+You know if we're [doing] a load a 14, we're moving that 14 into the memory address register
+So that we can fetch whatever is in that [particular] location of memory
+And then in the next step we do ram out
+We so we take the contents of memory and put it into the a register a register in so in other words
+if our instruction register says 0 0 0 1 and, we're on step 3 excuse me step 2 0 1 0
+Then we say instruction register out and memory address register in and then everything else is zeros
+And then for Load a at time T3. We say ram out a register in
+so ram out a
+register in and the rest are zeros
+And so that's everything for a load a command
+We don't actually need to do anything at time t four so in this case
+We'll [just] leave all of those signals low and that way for that clock cycle the computer won't do anything now
+[the] next instruction is is add and add the
+Opcode for that is zero zero one zero
+and when that when that
+instruction is zero zero one zero we do something different [4] times [t] [2] [t] [3] and [t] [4]
+So these these in this case here
+This was load a but for add the instruction is going to be [zero] [zero] [one] [zero] [and] it'll be zero zero one zero
+for those last three steps of the instruction cycle, so this is the add command and
+The way the add Command works is of course
+We've already gone through for step zero and one we fetched the add command from from memory, and that's the same for every command
+but then four
+steps so 0 1 2 3 and 4
+[for] steps 2 3 and 4 for the add command [so] the first thing we want to do is we want to take instruction register
+out and
+Memory address register in so we want to take the the the location, so if we're saying add 15
+We want to we [want] to go to memory address location 15 and get whatever is in there and add it to the hey register
+So add 15 so we take the instruction register out we put that address into the memory address register
+and then we take the contents [of] ram so [ram] out and
+put that into the b register, right so be in is over here and
+Then that'll start to add. Whatever is in a and B
+And so we take the sum out from that addition and put that back into to a register so a in
+And so these are the steps for the add command, and I'll just fill in the rest of these zeros
+So that's the sequence of control signals that we want for the add command and then the last command that we had in this [program]
+Is output command?
+And so that the opcode for that, you know we decided was just going to be 1 1 1 0
+So we'll just do that here that's 1 1 1 0 will be the instruction that gets loaded if we want to use the output
+Command and again that has the same 3 steps in this case the output command is is quite quite
+Straightforward it just takes the contents of the a register so a out and it puts it into the output register, so output register in
+Is right here?
+And that's it it only needs one [more] clock cycle. So these last [2] clock cycles are just unused
+And you might be able to imagine some ways that you could optimize the computer to skip those in certain cases, but for now
+We won't worry about that
+So I'll just fill in the rest of these has all zeros
+[now] you might notice this is starting to look a lot like [a] truth table where we have inputs over here on the left
+which are the instruction register and the step that we're on and then we have outputs which are the you know the control signals and
+In fact that's [exactly] what this is this is a truth table
+that defines the logic that we need to build [for] the rest of the control logic and so you can imagine there's several ways we
+Can we can built this one is we could build this logic from discrete logic gates
+so you could say ok well these are my inputs I've got you know seven inputs and
+15 Outputs
+And let me design [a] circuit using you know and gates and or gates and inverters and [nand] gates and all the rest
+That actually defines this logic, and you could do that and if you go back and look at the video. I did on building a
+7 segment display decoder
+You know I did something similar there. It was a bit less complex than this
+and that [got] pretty complex, but you may also [remember] that we were able to simplify that by using maybe eeprom and
+In fact if you look at this you might think well this this would be very easy to do with an eeprom because you've got
+These 7 bits over here that are inputs and you can imagine those being the address
+Into a location in the [erm]
+And then these 15 bits over here you can imagine being the contents that are stored [be] prom
+And that's exactly what we're going to do with this computer the problem of course is that the e probes that we've been using are
+Are these?
+28 C 16 [any] problems [I'm] going to continue to use those for the control logic as well
+But you remember you know got. What is it? Yeah a lot of address lines going in here, and of course we only need seven
+And there's only eight
+Data pins, [so] there's only sort of eight outputs
+And [then] farms the address lines go to that [TD] enough
+We can just set the rest of them to zeros as far as the outputs go well there's only eight outputs
+but we can use two chips to get eight outputs from one and then eight outputs from the other and that's kind of why I've
+Divided these like this so that [we'll] have half of the control word in one of the chips
+And the other half of the control word in the other chip
+And then as far as the instruction and step those will be the address inputs to both chips
+We'll just feed that into both of them. So now to actually build that to add those ee problems into our circuit here first
+I'm going to get rid of this sort of temporary
+[setup] that. I had here with this inverter. We're not going to need that since we're going to replace all that functionality with the [eeproms]
+and also going to
+Disconnect all of these jumpers that I was using to manually set the control words because we're now going to be able to use
+The the control logic that we're about to build so we get all that out of the way
+So I had to eeproms here and the first thing I'll do with each of these is just hook up power and ground
+Now if we look at the pin [out] for these chips there's a couple other things
+We want to make sure we hook up
+We've got the right enable output enable and chip enable and we want to make sure each of those is set properly
+so right enable it all of these are active low and
+So we want right enable we don't want to be writing to the chip we only ever want to read from this once
+It's you know in the circuit here
+So we want that to be high because we don't want to write and then output enable and chip enable we want to be low
+Because we do want the output enabled and we do want to chip enabled. So set write enable
+High on both of these and then output enable low, so it's active and then chip enable is also low
+so that's also active now the address lines for each of these chips is going to come from the instruction as
+Well as the step because those are kind of inputs if you will to this to this truth table
+So those are going to be address lines, and so there's only seven bits therefore for that address
+And each of these chips has a has a tone an 11-bit address
+so we want to make [sure] that you know our address is going to come in here on you know a 0 through a 6
+those first seven bits of the address, but then a 7 8 9 and a 10
+we're not going to use those we just want to tie all of those to ground, so I'm just going to do that now a
+7 is down here, and then a 8 a 9 and a 10 are all up here
+so we'll just tie all those to ground and same thing for the second chip over here, so a 7
+8 a 9 and a 10 and so now the only pins that aren't connected are a 0 through a 6
+the 7 address lines as well as the [Ion] Lines Io0
+through [I/o] 7 and
+Those are the signals that we want to use right?
+So we have 7 address lines [4] inputs and then for each chip we've got 8 outputs
+And actually here
+we're not using one of those but that's
+Ok we might find a use for later on so what I'm going to do is I'm going to set up
+these as our addresses will be a 0 a 1 a 2 a 3 a 4 a 5 and a 6
+So we first set up a [hookup] this step those 3 bits which are?
+Basically these 3 bits here that count which step on only hook those up to the first 3 address lines
+So let me just figure out which of these I forget which of these three is the least significant bit
+So which one should be address 0 so let me just double check we add power
+see the clocks not running probably because we're halted so if I connect
+Our hulk signal I've disconnected that if I click [go] [back] to ground there. We go. It's a clocks running
+So you can see this led here on the left is the least significant bit and that sneaks around here
+So that's this signal here, so if [I] hook that
+signal there to address 0
+Which let's see these 3 pins here are going to be
+The I/o pins so that should be a 0 there, and then this next one is
+a 1 and a 2 so there we go, let's just connect that
+So we've got the first three address that's hooked up to our
+[hour] switch step or on so those 3 bits and then the next four address lines are going to go to
+The instruction, which is this you know these four bits here, whatever instruction. We end up loading
+And so now we've got the four bits from the instruction register that indicate which instruction
+We're executing now connected to
+Four of the address lines for this first [ee] prom and as far as the second ee prom we want all the same address lines
+Connected to it
+So we [just] need to connect those exact same address lines in the exact same order over [to] the second ee problem
+So that both of them will be pointed to the same address at the same time
+And then we'll have you know eight bits from this plus eight bits from this will give [us] 16 bits
+That'll let us set whatever our control work needs to be so we can just connect those eight
+Iago's line Straight across there we go a little bit tight in there, but hopefully that'll work
+If not, we'll have something to troubleshoot. So next we [just] need to hook up. The I/o lines which are in this case
+We're [not] writing to this. They're just output lines
+so we need to click hook up to eight output lines over to our control law signals over here and
+The way I want [to] do that is you know got io zero?
+Through seven and I want to basically just kind of to make things easy
+line it up kind of in the same order that it is here so that
+You know for the chip on the left?
+will be these eight bits on the left to the chip on the right will be these eight bits on the right and then the
+You know the bit on the right here, this will be you know Ioz Row
+And Io one two three four five six seven and then over here this will actually be i/o one we won't use zero
+One two [three] four five six seven will be the sum out
+Just to kind of keep things in order and again
+You know you can do it any order you want, but you just have to kind of keep track of things
+So I'm just going to do it kind of in a way that it's laid out here just to
+Preserve my sanity and so that means salt which is over here on the left is going to be D7
+Or Io7 I guess I owe seven on the chip on the left
+So so ios 7 is is this pin here, [so] I want to connect that over to halt?
+That's this pin here, and then I want to connect that to my whole signal here, and then just go down the line here
+So Io6 is [going] to connect to the next signal which is memory in
+Io5 it is going to go to ram in io [four] is going to ram out and I of 3 is going to
+instruction register out and then i/o two is down here next to ground and
+that's going over to instruction register in Io one is going to a
+Register in and finally [I] of 0 is going to a register out and so that's the first eight of those
+Control signals is hooked up [to] the eight bits from the first a eeprom
+And so now I'll [just] do the same [thing] for the second [ee] prom so again
+We're going to start [with] [io] 7 which will go to the [some] out
+signal
+Io 7 is here, and it'll go to some out io 6 goes to
+Subtract Io 5
+goes to be in Io 4
+goes to output register in and
+Io 3 over here goes to
+counter enable and all those in there nice jumbled mess
+And then io 2 down here comes around to counter out
+And then finally io one goes to jump and then I of 0 is not connected for now
+But we could add another signal over here
+And that would be I [of] 0 and actually I left room over here and over here
+to add another key prom and some more leds [if] we want to add even more control signals to
+Expand what the computer can do is maybe in the future and so now we basically hook this up so that our
+Instruction and what step are on control or can control I suppose the the control signals over here?
+[but] of course we need to actually program the ee prompts before [it'll] actually you know do what we want and [I] built this arduino
+eeprom programmer in a previous video
+And I would normally use that I think if you know once the computer gets a bit more complicated
+You want to program a bunch of instructions into it?
+But for now, I think it's going to be a little bit clearer to see what's going on
+If I use this manual eeprom programmer, but also built in a previous video, so yeah
+pull out this first eeprom and
+Stick it in here
+Shoot it to me right place, and if we power this up
+So you've got all [ones] in there, but we want you want to start writing to [this] he problem
+so go into write mode here and
+Basically what we want to do
+is write in
+This data. You know essentially in each of these addresses we want to write the appropriate data
+You know this here, so this is the eeprom on the left that we're programming now so the first thing
+I want to do is is program in for step 0 and so step 0 is where these first three?
+bits of the address on the left are all 0 0 0 0
+and then we don't care what the instruction is so
+[doesn't] [matter] what the next four bits are they can be anything we want to program in this particular?
+8-bit value here, and really what that 8-bit value is is its setting we can [actually] use the same label here
+It's setting the memory in
+And then the counter out so counter out is over here that's on the on the other ear um so for this e eeprom
+It's def they're really all we need to program is memory, [and] [we] want to set that high
+so let me set that high
+There's memory in and then the rest of the bits will set low
+So I'll just tie them all to ground
+it's all program [this] [at] address [zero] by pushing that button and
+So that sets it for step zero you know for instruction zero, but we want it for any instruction
+So really what I want to do is cycle through all of the possible instructions
+So I'll go to instruction [1] step [0] and program that in and then I'll go to
+instruction 2 step 0 and program that in and instruction 3
+Program it in and then instruction 4 and program it in
+five
+six seven [eight]
+nine 10 11
+[12] 13 14
+and 15 so now for every
+possible combination of instruction bits here so all all 16 possible instructions for step 0 I
+Programmed in this memory in bit high and then the rest of these bits low
+So that handles that handles this case here. So the next case is step one and so step one
+for any instruction, we want [ram] out [an]
+instruction register in
+so let me set those bits so [ram] out is going to be that bit [an]
+instruction register in
+Is that bit so 0 0 0 1 0 1 0 0 0 0 0 1 0 1 0 0 so that's what we want?
+Set for step 1 again any instruction
+So I'll set that for instruction 0 and then I'll just cycle through the remaining
+15 instructions and set it for each of them. Just like we did with the last
+step
+Okay, so now for step 1 all 16 instructions any any combination of instruction bits
+We've now set this [ran] out instruction register in like that
+now we can come on to the actual you know micro code for each instruction, so for Load a
+That one is going to be
+in this case Step 2
+Right and then load a is 0 0 0 1 so now we have this instruction step 2 is going to be
+The memory address register [an] instruction register out so let's set that and so will program that and then the next step is
+again instruction 1
+Step 3 so we'll set step 3 here instruction 1 step 3 and we'll set here
+We want [ram] out and a register in and we'll program that and then finally step 4
+Is actually just all zeros [who] [will] program that so now we program the micro codes [for] the load a command?
+So next we've [got] the add command and to add command is zero zero zero zero one zero
+Is the [opcode] for the add command and then we'll go back to
+step two
+So for step two instruction register [out] memory address [read] [the] [screen]. That sounds right?
+program that
+Next step [let's] ran out, and then we're also going to do it looks like
+Be in it that makes sense
+But that's over here on the on the [other] chip so we're not programming that yet put a little program that
+And then we go to step four for the add command
+Now you're going to add command step four in
+That case on this side
+We [just] have the a in it's a in as high an [we'll] program that so that's the add command
+And then the output command the opcode for that is one one one zero and then we'll go back to
+step two and
+We just have a out I've got a out. I'll program that and
+Then step three all zeros program that and in step four
+There's also [call] zeros so program that and so now this eeprom is
+Completely programmed for the fetch cycle for any instruction as well as the additional micro code
+instructions for Load a add and the output commands
+So now we can pop this out and put it back in the computer
+And then [we'll] pull out the next one and program that one the same way, so if we put this in here now
+I'll go back to address zero and this time around we're over here programming
+Those bits of the control word and so again. We have to we have to program the fetch so in this case
+we're programming this side over here, so
+For step two zero we want the counter out to be enabled, and that's now this bit here is counter out
+[and] just like before we want a program
+Step zero for now into all of the different instructions, so we'll just cycle through
+Instruction 0 through 15
+Okay, and so now we have that counter outfit set for all of step 0 and we'll do the same thing for Step 1
+Where we want the counter enable to be set so counter enable set for step 1 and again will cycle through all [of] the different
+Instructions because we don't know what's going to be in the instruction register for the first two steps of the instruction cycle
+So there we go. I think I've got all those programmed correctly
+[and] so then moving on to Step 2
+We get into each of the different instructions
+And so I'll go ahead and program the same thing for our program the correct thing
+I should say for for each of the each of the instructions here
+So load a can be all zeros and then add, and then finally
+For output we want output enable [ok] so now the second [a] [promise] program
+So we'll go ahead and put [that] back in the computer as well alright. So now with these [programmed]. We we should have
+the
+fetch cycles
+working, just like we did before but now it's part of the eeprom and
+As well as the load a and an output commands should all hopefully work
+But we'll let's let's test it out if we go ahead and connect power
+Hard to say what's going to happen here, but if we just stop the clock for now
+and go ahead into programming mode and let's go and
+Program this this program back into memory so that we know what's in memory
+And we can step through and see if it works the way that we think it well
+So this program again is just going to do a load a 14 add 15 and output
+so load a 14 will go to address 0 and
+Put in that load a 14 solo day
+14 and
+then address 1 will be
+add 15 so add is 0 0 1 0 and then 15 is all ones to add 15 and
+then we go to
+address 2
+And we wanted to output output up code for that is 101 0 and then the rest of it. We don't care
+So that's output
+And then we just need to put our data right because we've got data in Editor 14 and 15 and we're loading and then adding
+And so that's the 28 and 40 so or 14 so nadra is 14
+We want to put that 28 at 0 0 0 1 1 1 0
+0 there's our 28, and then look at the address 15 and we want to put in a
+14 there's 1 1 1 0 so there we go
+Yep, and if we go back into program mode
+We can start to try to step through [our] program and so first thing
+I'll do is just kind of reset everything
+so if you see a program counter is at this weird value that I can just reset that and
+[then] our a register B register result 0 everything else seems to be all 0 we're on t 0 here so
+[I] think we're ready to
+We'll run the program, but I'm going to single step through just to make [sure] that everything is working the [way] that
+we did we hope it would so we're at the time t 0 here so
+Step 0 and it doesn't matter what our instruction is in this case. It's all zeros
+[but] that's fine, so step 0 we want to do lay
+The counter out in memory address register in and so counter is 0 and we're going to put that into the memory address register
+Counter out memory registers you're in so I do that nothing really happens
+We're just putting a 0 there, but now we're at time t 1 and so step 1
+here
+Again doesn't matter what our instruction is we're going to do ram out instruction register in and counter enable
+so we've got ram out instruction register in and
+Counter enable so it's going to take the contents [of] ram put it into the instruction register and then also increment our counter
+so we'll go [ahead] and
+single step that with the clocks and there it is so that moves that there and our counter is now 1
+So now at this point. We're on time t 2 so 0 1 0 is the step we're on
+And now it actually matters what our instruction is [in] sorry [affection] is 1 1 0 0 0 0 1
+which is the opcode for Load a
+and so
+With that opcode on step
+0 1 0 then
+the re problem should be outputting
+Looks like instruction register out and memory address register in and that's exactly what we've got here
+So that looks like it's working well
+and so it's going to take the contents of
+Instruction register or at least the lower four bits and put that into the memory address register
+So will single step that and there it is there's our 14 there and now we're on time T3. So
+We're 0 1 1
+Is our step and then our instruction is still the you know the load a instruction here?
+And so now we should be doing a ram out and a register in so indeed
+That's what we've got ram out a in
+So it should take the contents of [ram] and put it over in the a register, so we'll advance the clock and that's what happens
+puts that 28 over there into the a register, and then now we're on
+Step 1 0 0 and
+our instruction is still low days there's a 0 1
+And we're done with the load a we've loaded that 28 into the a register [so] we don't need to do anything
+So this step is basically doesn't do anything. So there's nothing set here. So it's really just kind of a
+Waste of time if you will but you know maybe there's a way to optimize that in the future
+But we we cling out. It's ok we'll just use an extra clock cycle to advance the clock and nothing will happen
+But we go back to time T0 and so now we're back at time T0
+Sort step 0 our instruction is different now about right it's
+Before we had instruction 0 in here which we haven't really defined
+Now we have instruction 1
+But it doesn't matter right because we programmed this step 0 for every instruction. So we're still going to do the same thing
+We're still going to do the counter out and the memory address register in
+But now this time the counter is 1 so we're going to put a 1 [in] [to] the memory address register
+Which will now get the next instruction, which is add 15. That's what we programmed in to address [1]
+[&] [2] [Now] We're at Time 2
+And again I've seen the time Time 1
+t 1 so [they're] 0 1
+and again
+it doesn't matter what our instruction is we're still going to do this [ram] out instruction registry and
+Counter enable and so that's what we we have here. So we've got our he promise program correctly
+and so we'll see the ram out will see this contents here move into the instruction register and
+Then also the counter incremented here, so now our instruction register
+We've got 0 0 1 0 and that's the opcode for [add] so now we're on
+you know step step 2 0 1 0
+But instead of 0 1 0 and having the load a command here
+We've got 0 0 and we [have] the add command here in our instruction register, and so we're going to do something different
+So in here this time, we're going to do
+Let's see we're going to do instruction register out and memory address register in and so that appears to be what's showing up here
+So we go you get me pregnant programmed, right?
+so it's going to take again this address from instruction register and move it into
+The memory address register, so now we can get at the contents of memory which is this 14?
+So the next step here. We're 0 1 1 is the step wrong
+We're still you know doing an ad because that'll attend our instruction register
+so we've got ring amount and
+B in and indeed that's what's showing up down here so [ram] out b ends is going to put this 14 into the B register
+And that's what it does and now we've got the 28 in a and the 14 and b. So we get the sum over here
+and so the ad is then going to take
+The sum out take the sum out and put it into the a register
+And so that's in fact what we have here
+And of course it latches that into a register
+Just immediately on the rising edge of the clock so as soon as that goes in here
+It'll it'll latch and then of course now the new sum is there but we've we've only latched it into the a register
+So we have the sum of those values
+And that actually used up all of all of our clock cycles for instruction cycle, so we're back at instruction 0 again
+But now you know our instruction is still saying add
+But we care
+We're in [step] zero so we don't care what the instruction is where we're going to set the next instruction
+So we've got counter out memory address register in again
+[so] we're going to put our two over here because we want to attach the next instruction from address to which we programmed is out
+command
+So we've got that and then we're going to do step one
+Which is ram out?
+so the contents of Ram
+Which [is] the you know got our instruction end we're going to put that in the instruction register
+and we're also getting increment our counter and
+What happened something didn't work right? And I didn't see what happened
+This should be an address - I'm not sure why [that] went to zero
+We've got a load a here. So [it's] saying
+Instruction out in it and then we address vegetarian which is right, but I don't know why we have a load a there
+We should have
+We should have done something different
+[I'm] not sure what happened. So what I'm going to do
+Since I I didn't see what happened is
+Try to set that up again. So we have the program still in memory
+So I'm actually going to reset everything
+I'll reset the program counter to zero I'm going to reset to a register to zero I'm going to reset the B register to zero
+and to reset the instruction register to zero
+And I'm going to reset
+Let's see how do [I] reset you?
+I'm just going to advance the clock until we get to T0. Okay there. We are. [so] that's a T0 program counter
+Make sure that's back at zero
+okay, so [we're] reset, and I'm actually going to kind of step through because the place we
+We failed was in loading the output so let me do the load a in the [add]
+So I'm going to just quickly step through the the load [hey] again, so it's the first five
+So that did a load a and we've got our 28 there the next five clock cycles will do the add
+And we've got our sum. Now is in the hey register
+[and] so we're kind of back where where things went awry, [so] let me just look at this and make [sure] things make sense
+So we're at t zero
+we just did our ad
+And we're saying counter out memory address register him, so the two is going to go to the memory address register
+so there it is and
+Here's our output command. It's in memory and the next thing we want to do is we want to say
+ram out instruction register in counter enables
+we've got ram out instruction register in counter and able so this should put and
+this is [visit] to step where it didn't work last time, so I'm
+Suspicious, but this should put this one one one zero
+into the into the instruction register and
+then increment the program counter to three, so let me just
+run the clock one one step and
+That time it worked
+We have the right instruction here, so maybe I [bumped] something
+You know there that is the problem with breadboards sometimes things are loose and unreliable, so it might be I bumped something
+But it looks like this time [it] worked, so [we're] back. We're back here
+We've just loaded where it stepped you know T2 now, and we have the output command in our in our
+instruction register
+and
+so now what we're going to do is we're going to say a out and
+Output register in and that's what we've got here
+and so if we step this it should take the contents of the a register and display it on the output and
+there it is 42 is the answer as it should be and
+The next two parts of output are just all zeros, so we've got all zeros
+So that's a clock cycle, and then all zeros that's a clock cycle, and we're back to t0
+Again, and of course we didn't program anything in after after these three commands, so there's just garbage in memory
+So if I keep running it who knows you know, what will [happen]?
+But it looks like you know that one little anomaly, and I'm going to guess that [I] bumped something
+Maybe you know when I watch back over the video. You know notice that I bumped something or something like that hopefully
+but
+but it looks like
+You know we've got these canals looking to load a to add the output we were able to program them in memory and then run
+And run the program and just just for fun. You know instead of single stepping it [lets] try to run the program
+Automatically so what I'll do is
+reset everything so I'll reset [a] program counter or reset a
+register reset the B register
+reset the output
+register to zero
+[reset] the program or the instruction register and
+We'll reset the memory address register as well
+Everything is set to zero or on t zero here if I start the clock it should
+Run those commands and then output the result and it's going to keep running
+So who knows what'll do after it outputs the result, but it should at least
+Output that result so let's let's give [it] a go
+And there it is and that's you know you saw the 42, but then who knows what it's [doing] now
+So maybe what we really want is we want to halt command. So maybe that'll be the next command. We add next is a [halt]
+And you know let's let's say you know that's going to go in address zero zero one one
+And you know we get to make up the opcode we want for it
+So let's just say it's going to be [one] [one] [one] one and then you know it doesn't have any parameter there
+So if we want to make a halt command, we actually can do that. We just need to program in the right [micro] [code]
+Into our eproms to add this this halt command, so let me stop this for now
+and so if we want to add a halt command here
+we've got 1 1
+1 1 is going to be the opcode for it and of course. It's still going to have the same three steps
+Although as you'll see it'll never actually get [to] them the other two because it's going to halt the computer
+[but] basically this [is] a simple enough command because we have a halt signal and remember with this whole signal goes high the clock stops
+so if we just set that high
+Just really matter. What else we do
+The clock will stop and and that'll be that the computer will stop until we reset it somehow, so this will be the hult command
+and
+This should be a pretty easy thing to program into our to [eeprom] so now let's do that real quick
+You want to program that in?
+here's a lefty prom and
+Here we want to go to
+Halts which is
+1 1 1 1 and then Step 2
+we want to set
+my program here
+We'll set those first 10 low
+or high excuse me and then everything else low and
+program that and then for step
+3
+We'll just do all zeros and Step 4
+all zeros and
+[then] the left one we just want to make sure we've got all zeros in it
+so here program all zeros I got halt and then So [4] 2
+[3]
+[&]
+4
+We want to put the errors in there
+So I just pulled those [eeprom] down and reprogrammed the the halt command without
+Shutting the rest of the computer without you know pulling power off the computer
+[I] just pulled the chips out and put them back in so the program should still be in memory
+But let's just walk [through] and make sure and then also add that [halt] command to it so at address 0
+we've got our load a 14 go to address 1 we still have our add 15 and
+address [two]
+We've got [our] output and then address three we've got garbage
+But what I want to do is put a halt command there which we now
+Which we now have and so that's a halt
+[so] [that] should be there, and then let's just double check address 14 and 15 still have our data
+And that's good go back into run mode
+Make sure everything's reset so at time t. 0 so that's good
+program counter a register B register instruction register all zeros I
+Guess memory address register, we could reset that as well to 0 though
+It doesn't matter the first thing to do is to take our memory address register
+Or counter out and then register in
+But I think that should be it and so in theory if we just run this program it'll do that
+Load a add 15 output the result and then honk the clock and so we should see this halt light come on
+We should see the clock stop let's let [Er] Rip
+And the hair goes we got our 42 out output and then we got our halt here and the computer is halted
+So it it ran [through] the load a 14 it added 15
+We output the result and then it halted and so you know we also were able to just add that new hold command
+Just like that
+So I'm gonna leave it there for now in the next video
+We'll probably go through adding some more commands and just [making] [the] computer more more capable [byte] by adding new instructions to it

@@ -1,0 +1,4 @@
+1. Sort movies by earliest ending
+2. Take first earliest ending movie that is still considered (i.e. not selected or removed because it was colliding)
+3. Eliminate colliding movies
+4. Go back to step 1 until all movies are either selected or removed

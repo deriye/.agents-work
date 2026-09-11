@@ -1,0 +1,1480 @@
+0:00
+there are a lot of ways to build a clock
+0:01
+circuit for a computer uh but you know
+0:03
+we want something that's relatively
+0:05
+flexible we can adjust the speed you
+0:07
+know we don't want it to run too fast we
+0:08
+want to be able to see what's going on
+0:10
+and so I'm going to use the the 555
+0:12
+timer this is a classic uh integrated
+0:15
+circuit here the the triple five timer
+0:17
+and this that's what this chip is here
+0:19
+and so you can tell pin one here is uh
+0:21
+by the the divot and one 123 4 5 6 7 8
+0:26
+and right now I'm powering this with uh
+0:27
+this is just 5 volts coming in from a
+0:29
+cell phone char charger that I've cut
+0:31
+into the USB cable pulled the 5 Vols out
+0:34
+and to power the chip uh power comes in
+0:36
+5 Vols here on pin 8 and ground to pin
+0:39
+one you can actually go up to I think 17
+0:41
+volts or 16 volts or something uh with
+0:43
+this chip but 5 volts
+0:45
+works and uh to control the timing
+0:48
+you've got two resistors and a capacitor
+0:51
+and so the first resistor here is going
+0:53
+from 5 Vols to pin 7 this is a 1K ohm
+0:57
+resistor and then from pin 7 to pin six
+1:01
+I've got a a 100K Ohm resistor and then
+1:04
+pin six is connected around to pin two
+1:07
+and then from pin two to ground I've got
+1:10
+this capacitor and this is uh this is 1
+1:13
+microfarad uh capacitor and you can see
+1:15
+the positive side is connected here to
+1:16
+pin two so the negative side is
+1:18
+connected to ground you want to make
+1:19
+sure that's in the right way and so
+1:22
+those resistors and the capacitor
+1:23
+control the the timing we'll see how
+1:25
+that works in a minute uh but the output
+1:27
+of this chip is on pin three and so
+1:29
+that's just disconnected to this LED and
+1:31
+you know the the output can drive a fair
+1:33
+amount of current so we want to make
+1:34
+sure we have a current limiting resistor
+1:36
+this is just a 220 Ohm resistor here
+1:39
+limiting the current through the LED so
+1:40
+we don't burn up our LED so how does it
+1:43
+work a good place to start of course is
+Datasheet
+1:46
+the data sheet uh this is the data sheet
+1:47
+for the 555 timer and you can see they
+1:50
+they actually give you a whole schematic
+1:51
+of what's going on inside that chip uh
+1:53
+which we we won't go through all that uh
+1:56
+but they also give you a bunch of other
+1:58
+stuff in here one is this sort of block
+2:00
+diagram it gives you a little higher
+2:01
+level view of what's going on and so you
+2:03
+can see there's a a couple comparators
+2:06
+there's you know these three resistors
+2:07
+there's a
+2:08
+flip-flop um that these comparators
+2:11
+Connect into and then there's this
+2:12
+output stage so this this is pretty
+2:15
+interesting I don't personally like the
+2:17
+way that this is drawn it's kind of
+2:18
+drawn to line up with the pins here they
+2:21
+give you a different version of it a
+2:22
+little bit later on in here this is a
+2:25
+sort of a different view of the same
+2:27
+thing uh but I don't really like this
+2:29
+one either it doesn't show there
+2:30
+actually should be a connection from
+2:31
+here to this comparator and uh you don't
+2:33
+really know what these inputs are it's
+2:35
+like okay there's three things going
+2:36
+into the flip-flop but what what are
+2:38
+they I don't know I don't particularly
+2:40
+care for these diagrams uh so I I drew
+2:43
+up my own that I think explains this a
+2:46
+little bit better and you can see just
+2:48
+like those other diagrams there's the
+2:50
+two comparators there's a a flip-flop
+2:53
+It's actually an Sr latch I think it's
+2:54
+probably a better way to describe what
+2:56
+this thing is um and you just kind of
+3:00
+walk through what's going on here so
+3:02
+everything inside this blue box here is
+3:04
+is kind of what's going on inside the
+Circuit diagram
+3:06
+inside the the timer itself and then the
+3:09
+the green stuff that I've drawn out here
+3:11
+is is the rest of the circuit so we can
+3:12
+kind of go through and look at what
+3:14
+we've got so this this 1K this is a 1K
+3:17
+resistor uh going from 5 volts to pin 7
+3:21
+and then between pin 7 and six that's
+3:23
+this 100K
+3:25
+resistor here and you can see pin six
+3:27
+and two are connected that's this little
+3:29
+green wire going around here and then
+3:32
+between pin 2 and ground we have this
+3:34
+one
+3:35
+microfarad uh capacitor and then over
+3:38
+here we just have our LED and this is
+3:40
+our uh I think it was a 220 ohm uh
+3:43
+resistor over here so this is this is
+3:45
+our circuit and understand how it works
+3:47
+we can kind of look at what's going on
+3:49
+inside the the triple 5 timer so just
+3:53
+start by looking at this this uh path
+3:55
+through here you can see we've got our
+3:57
+plus 5 volts up here
+4:00
+and then of course our ground down here
+4:01
+is z volts um and then there's these
+4:04
+three resistors and uh I think each of
+4:07
+these resistors inside here is 5K so 5K
+4:10
+5K 5K I think it's a complete
+4:12
+coincidence that it's a 555 timer but
+4:14
+anyway um but what these do is these set
+4:16
+up a uh a voltage divider and so at this
+4:20
+point here you're you've got 1/3 of the
+4:23
+voltage between 0 and 5 volts so that's
+4:26
+you know 1 and 2/3 volts so 1.67 volts
+4:29
+we'll call it
+4:30
+and then at this point here we've got uh
+4:32
+2/3 of our 5V Supply so this is uh 2/3
+4:36
+is you know 3.33 volts and so you got
+4:39
+this voltage divider so you got 5 volts
+4:41
+you go through this resistor you down to
+4:43
+3.3 you go this other resistor you down
+4:44
+to 1.66 67 whatever U you go through
+4:48
+this other resistor and you're down here
+4:49
+at Ground at
+4:51
+zero and what that does is that sets up
+4:53
+these inputs for these comparators and
+4:55
+the way the comparators work is there's
+4:58
+a positive input and a NE input and if
+5:01
+the positive input is above the negative
+5:03
+input then the comparator switches on
+5:05
+and the output is uh is 5 volts and if
+5:09
+the positive input is below the negative
+5:11
+input then the comparator switches off
+5:12
+and the output here is z volts so let's
+5:15
+think about what happens when we when we
+5:16
+turn this thing on get this out of the
+5:18
+way here for a second so what
+5:21
+happens
+5:22
+is let's assume that these inputs over
+5:25
+here this is all Z volts so we've just
+5:27
+turned this on the stuff is z volts um
+5:30
+so we've got Zer volts coming in here
+5:31
+that is below 1.6 volts and so this
+5:36
+comparator turns on and so that triggers
+5:38
+the set pin of our Sr latch and if you
+5:40
+don't know what an Sr latch is I've got
+5:41
+a video on that but basically it's got a
+5:43
+set and a reset and when the set goes
+5:46
+High then the output comes on and when
+5:48
+the reset goes High then the output
+5:50
+turns off and then of course if they go
+5:51
+low then it remembers its last state and
+5:54
+there's uh both the output here and then
+5:55
+there's the inverted output here which
+5:57
+is which is always the opposite of our
+5:59
+of our output so if we have Z volts here
+6:02
+we got Z volts here this comparator will
+6:04
+be on because zero is below 1.6 and this
+6:07
+comparator will be off because zero is
+6:10
+not above 3.3 so this one's off this
+6:13
+one's on and so the latch is going to be
+6:14
+set which means our output will be will
+6:17
+be on so the LED will be on so we're
+6:18
+going to start on so we'll do a little
+6:21
+uh graph here and if our output is on
+6:24
+then then our our not output our
+6:27
+inverted Q here is going to be off and
+6:28
+so this transistor will be off and so
+6:31
+nothing nothing's going to go happen
+6:32
+here we can kind of ignore this this
+6:34
+whole discharge thing here for for now
+6:37
+so what's going to happen is uh we're
+6:38
+going to have current flowing through
+6:40
+this 1K resistor through the 100K
+6:43
+resistor and into this capacitor down
+6:45
+here this one microfarad capacitor and
+6:47
+that capacitor is going to start to
+6:49
+charge and so if you look at the charge
+6:51
+on the capacitor which is also the
+6:52
+voltage here going into pin two it's
+6:55
+going to start let move this see we can
+6:57
+see here uh it's going to start here at
+6:59
+0 volts and it's going to start to
+7:04
+climb and it's going to keep climbing
+7:06
+and climbing and climbing um as this
+7:09
+capacitor charges and so what's
+7:11
+happening is the voltage here is
+7:13
+increasing and at some point it's going
+7:14
+to increase above 1.6 volts and if it's
+7:18
+above 1.6 volts this comparator will
+7:20
+turn off because 1.6 is no longer above
+7:23
+uh whatever this voltage is so the
+7:25
+comparator turns off and that's fine
+7:26
+right because the latch is going to
+7:27
+latch its output so we're not we're not
+7:30
+asserting the set pin anymore this this
+7:32
+set signal um but you know if we haven't
+7:36
+reset it yet it's still going to be
+7:37
+we're still going to have a high output
+7:38
+here but eventually this voltage is
+7:41
+going to reach 3.3 volts and it's going
+7:43
+to it's going to maybe go a little bit
+7:44
+above 3.3 volts and at that point uh you
+7:48
+know that that voltage is going to be
+7:49
+above 3.3 volts and this comparator will
+7:51
+turn on because the the positive input
+7:53
+here is above the 3.3 volt negative
+7:56
+input um and so this will turn on and
+7:58
+this will reset the
+8:01
+and I guess I didn't give myself enough
+8:02
+room here so ignore that uh so this is
+8:05
+our output our output is going to get
+8:07
+reset when this hits 3.3 volts so or uh
+8:11
+yeah so this is if this is like 3.3
+8:13
+volts on our capacitor here uh maybe
+8:16
+this down here is 1.6 volts and we'll
+8:19
+say this is zero so we started at zero
+8:21
+we went through 1.6 volts you know
+8:23
+nothing happened we turned off the set
+8:25
+pin but we stayed latched uh and then we
+8:28
+get up to 3.3 volts and at that point
+8:30
+our output turns
+8:32
+off but the other thing that happens is
+8:35
+our our not output our inverted output
+8:37
+this turns
+8:38
+on and that's going to cause current to
+8:41
+flow from here through into the base of
+8:44
+this transistor and that'll turn on this
+8:46
+discharge
+8:48
+transistor and so then what happens is
+8:50
+you know current can now flow through
+8:51
+the 1K resistor through this discharge
+8:54
+to ground so okay that's that's not very
+8:57
+exciting but what's more interesting is
+8:59
+that current can also flow from the
+9:01
+capacitor through the 100K resistor you
+9:04
+know so before we were charging the
+9:05
+capacitor in this direction now we're
+9:08
+discharging the capacitor current is
+9:10
+Flowing from the capacitor through the
+9:11
+100K resistor and through this discharge
+9:15
+and so the capacitor is going to start
+9:16
+to
+9:19
+discharge and it will discharge for for
+9:22
+a little while and of course it'll you
+9:24
+know as soon as it starts discharging
+9:25
+it'll drop below that 3.3 volts and so
+9:28
+the reset will turn off but again this
+9:30
+is latched so nothing happens but
+9:32
+eventually the capacitor's voltage will
+9:35
+drop below 1.67 volts and now with this
+9:38
+below 1.67 the set comparator turns on
+9:43
+and it sets the latch again and so when
+9:45
+we set the latch when this gets down to
+9:47
+1.6 volts we set the latch we turn the
+9:51
+output on we also turn the discharge
+9:55
+transistor off so we turn this off and
+9:57
+so we're no longer uh pushing current
+10:00
+through the base of this transistor and
+10:01
+so this transistor is off and so no
+10:03
+longer is the capacitor discharging
+10:05
+we're back into the state where the
+10:06
+capacitor is charging again so the
+10:08
+capacitor will charge our output is on
+10:10
+eventually the capacitor will get back
+10:11
+up to 3.3 volts this will switch we'll
+10:15
+start discharging again and this will
+10:17
+turn off capacitor will
+10:19
+discharge it's off capacitor will charge
+10:22
+discharge and so we get the capacitor is
+10:26
+charging and discharging kind of like
+10:28
+this but our our output here is this
+10:30
+nice clean Square wave and that's what
+10:34
+we see when we look at the circuit here
+10:35
+we see our LED
+10:37
+flashing and of course we can control
+Duty cycle
+10:40
+the rate that the LED is flashing based
+10:42
+on the values of these resistors and the
+10:44
+capacitor right because you know the the
+10:47
+rate is is is uh uh set by how quickly
+10:51
+this capacitor charges and how quickly
+10:52
+it discharges and so how quickly it
+10:54
+charges is you know going to be
+10:56
+dependent on you know these two
+10:58
+resistors in the capacitor so the bigger
+11:01
+these resistors are the slower it's
+11:02
+going to charge and of course the bigger
+11:04
+the capacitor is the longer it's going
+11:06
+to take to charge um and then if these
+11:08
+resistors are smaller then it'll charge
+11:09
+faster if the capacitor is smaller it
+11:11
+will charge faster um and then for
+11:13
+discharging so the time when this is low
+11:16
+it's just discharging through the one
+11:18
+resistor here uh and so you know again
+11:21
+if if this is a bigger resistor it'll
+11:22
+take longer to discharge and so this
+11:24
+will be low uh for longer if it's a
+11:26
+smaller resistor it'll be faster and so
+11:28
+by adjusting these components we can
+11:30
+kind of control the the rate here and so
+11:33
+one thing you might notice is that you
+11:34
+know I chose a 100K resistor here and
+11:38
+then a relatively smaller 1K resistor
+11:40
+here I mean this is only 1% of this and
+11:43
+that's because you know because we're
+11:44
+charging we're charging through both and
+11:46
+when we're discharging we're only
+11:48
+discharging through this one but I
+11:49
+wanted this Square wave to be fairly
+11:52
+symmetrical uh and so by this only being
+11:55
+like a 1% difference uh in the charging
+11:58
+from discharging you end up with
+12:00
+essentially um essentially the same time
+12:02
+that it's off that it is that it's on
+12:04
+sort of What's called the duty
+12:06
+cycle and if you look at the the data
+Charge and discharge time
+12:08
+sheet they actually give you um some
+12:11
+formulas here for for figuring out the
+12:13
+time that it takes uh to to charge or
+12:16
+discharge so charge time discharge time
+12:19
+um and they actually show a nice little
+12:21
+graph that looks very similar to the one
+12:23
+that I just drew um but you can see uh
+12:27
+you know they they give you
+12:30
+they give you the charge time is based
+12:33
+on R A Plus RB I think they're calling
+12:35
+this R and this is RB um times the
+12:38
+capacitance which is the C here uh
+12:41
+whereas the discharge time is just based
+12:43
+on RB right because we're only
+12:45
+discharging through that one resistor so
+12:47
+you don't see RA in there and then the
+12:49
+total period is RA a plus 2 RB right
+12:53
+because it's ra a plus you're going
+12:54
+through RB twice for the for the total
+12:57
+period uh times R Capac AC and so we can
+13:01
+figure out our our total period just
+13:02
+using this formula we can pull out a
+Calculator
+13:04
+calculator here and so just sort of
+13:08
+order of operations here resistor B is
+13:10
+100,000 ohms so times 2 and then we can
+13:14
+add in resistor a is 1,000 ohms as our
+13:17
+1K resistor and we'll multiply that by
+13:20
+our our capacitor which is a it's a 1
+13:23
+microfarad capacitor so I think that's
+13:27
+that's one microfarad and then then we
+13:29
+multiply that by this
+13:31
+693 and yeah the reason you're
+13:33
+multiplying by that is you know you the
+13:36
+the resistance times the capacitance
+13:38
+gives you the time constant and that's
+13:40
+used in the to to sort of give you this
+13:42
+exponential uh can't see what I'm doing
+13:44
+here the the curve for this exponential
+13:47
+function um but you know we're we're not
+13:50
+we're not going the whole way and you
+13:52
+know we're just going from 1.6 Vols to
+13:54
+3.3 Vols and so they've they've done
+13:56
+some of the math for you to figure out
+13:58
+what what Co efficient you to use to get
+14:00
+from the time constant to the actual
+14:01
+period And so what we come up with is
+14:04
+139 uh milliseconds or .1 39 seconds and
+14:08
+so that's the the period that our that
+14:10
+our LED is flashing now if we want we
+oscilloscope
+14:12
+can double check all of this for
+14:13
+ourselves by hooking up to an
+14:15
+oscilloscope here so I'll just hook up
+14:17
+the ground for my my probes here and
+14:20
+then I'll connect one probe to the the
+14:22
+output uh which is the PIN three
+14:25
+here and then I'll I'll hook the other
+14:28
+probe up to the
+14:31
+capacitor uh so we can watch the charge
+14:33
+on the capacitor and here we go we can
+14:35
+see our our output uh which is which is
+14:38
+this nice Square wave and then we can
+14:40
+also see the uh charge and discharge of
+14:43
+the capacitor and so if you look Zer
+14:46
+volts is down here so this is 1 2 3 4 5
+14:50
+volts so you can see the charge and
+14:51
+discharge of the capacitor is going from
+14:54
+you know this is about 1 and 2/3 of a
+14:57
+volt up to you know 1 two three and a
+15:01
+little bit 3 and A3 volts so exactly
+15:03
+what we'd expect from that uh you know
+15:05
+that voltage divider uh now the output
+15:07
+you see is going from you know Zer volts
+15:10
+here to uh 1 two three and a a little
+15:14
+bit here three and a half volts maybe um
+15:16
+and you might expect it to go all the
+15:18
+way to 5 volts but but actually the data
+15:19
+sheet does talk about this uh it does
+15:22
+say if we look at the uh output voltage
+15:28
+here for our 5vt says typical is 3.3
+15:31
+volts and we're getting you know a
+15:33
+little bit more than that but it it says
+15:35
+the minimum is 2.75 volts so we should
+15:37
+be getting at least a minimum of that
+15:38
+which is fine that's enough for a logic
+15:40
+high level so if we're feeding this into
+15:42
+our any kind of digital logic we'll
+15:44
+we'll be okay with that and then we
+15:47
+should see uh you know 139 milliseconds
+15:50
+here so this is 50 milliseconds per
+15:53
+division so this is
+15:56
+1002 huh so that's not quite
+16:00
+not sure why double check
+mystery capacitor
+16:04
+this well I figured out the mystery so
+16:07
+we calculated 139 milliseconds and we
+16:10
+were seeing about double that and the
+16:12
+problem turned out to be these
+16:14
+capacitors so you know looking at this
+16:16
+capacitor it says 1 MFD 50v so I would
+16:21
+assume that that means it's a 1
+16:22
+microfarad capacitor 50 volts uh it's
+16:25
+got this 1022 I assume that that's a
+16:28
+date code of some sort maybe it's
+16:30
+manufactured in 2010 the the 22nd week
+16:33
+of that and that's all it says on it so
+16:36
+I would assume this is a 1 microfarad
+16:37
+capacitor uh turns out when I hook it up
+16:40
+to my meter it measures at 2
+16:44
+microfarads so I don't know what's going
+16:46
+on with that I got a whole bucket of
+16:47
+these things and they all say one MFD on
+16:49
+them and they all or at least all the
+16:51
+ones I measured measure two microfarads
+16:54
+so instead of one microfarad it's two
+16:56
+microfarads and so you know if we
+17:00
+if we plug that into our formula we had
+17:02
+one microfarad there instead of we
+17:03
+plugged two we're basically multiplying
+17:04
+by two so multiply that by two
+17:08
+278 uh
+17:10
+milliseconds and you know we're
+17:12
+measuring 263 milliseconds period here
+17:15
+and that's uh that's much more in line
+17:18
+that's that's certainly within you know
+17:19
+we've got 5% tolerances on this
+17:21
+resistors and stuff so 263 278 close
+17:24
+enough so very interesting I I always
+17:27
+assume these were one farad but
+17:29
+apparently apparently not if anyone
+17:31
+knows why they're they're marked that
+17:32
+way maybe maybe I'm missing something
+17:34
+obvious but I would assume that one MFD
+17:37
+means one microfarad but apparently one
+17:38
+MFD means two microfarads go
+power supply recommendations
+17:42
+figure yeah so 263 milliseconds that
+17:45
+that's much more what we'd expect and so
+17:46
+if we take one over uh
+17:49
+263 U milliseconds we get about 3.8 and
+17:53
+so that tells us this should be flashing
+17:54
+about 3.8 times per second and that I
+17:56
+don't know visually seems about right so
+17:59
+I think we're almost done with this
+17:59
+circuit it looks like it's working uh I
+18:01
+did want to talk just briefly there are
+18:02
+some power supply recommendations in the
+18:05
+data sheet and I wanted to talk a little
+18:07
+bit about the power supply we've got uh
+18:08
+this is just a a cell phone charger this
+18:11
+is from Apple which is actually a very
+18:12
+good power supply if you get a genuine
+18:14
+Apple one uh but in any event you know
+18:16
+it looks like everything's working fine
+18:17
+you know our our LED is flashing we've
+18:19
+got our nice uh clock output here so you
+18:22
+could probably use this and it would
+18:24
+work okay probably uh but there are a
+18:27
+few things that the data sheet
+18:28
+recommends doing
+18:29
+uh to reduce noise and so one thing it
+18:32
+recommends doing is putting a capacitor
+18:34
+on pin five we're not using pin five
+18:36
+it's control voltage it's for some other
+18:38
+features of the the trip 5 timer that
+18:40
+we're not using and it recommends
+18:42
+putting a a 01 microfarad capacitor from
+18:45
+pin five to ground to reduce noise so
+18:49
+what is it talking about well we see on
+18:51
+the scope here we see this nice
+18:53
+transition from Z volts to 5 volts but
+18:55
+if we if we zoom in on that or zoom in
+18:59
+uh what you see is that that nice
+19:02
+transition from 0 volts to 5 volts is
+19:04
+maybe not so nice there's some lot of
+19:07
+junk in there so if we add this
+19:10
+capacitor that they're recommending from
+19:12
+ground to uh pin five boom clears it
+19:16
+right up so definitely recommend that 01
+19:20
+microf capacitor going from pin five to
+19:22
+ground there's still some other noise if
+19:24
+we go in even further go into I'm going
+19:27
+the wrong way go all the way into uh
+19:30
+nanc range you see there's some
+19:32
+overshooting here and what's happening
+19:35
+is when the when the output wants to
+19:38
+turn on you know there's a bunch of
+19:39
+transistors in here switching and doing
+19:41
+whatever they do and you know when they
+19:44
+switch there's a different current
+19:46
+requirement so they're pulling more
+19:47
+current or they want to pull more
+19:48
+current from the power supply and
+19:51
+they're not able to pull that current uh
+19:53
+as as as quickly as as they would like
+19:55
+to and
+19:56
+then at this point they're they're they
+19:58
+end up getting more current than they
+20:00
+than they wanted and it kind of
+20:01
+overshoots and surprised we don't see
+20:03
+more sort of back and forth oscillations
+20:05
+here that's fairly typical but uh it
+20:07
+looks like it levels out pretty quickly
+20:09
+here um but we're overshooting above you
+20:12
+know right here this is 5 volts we're
+20:13
+going up over 6 volts which may not be
+20:16
+good you know if if our output is
+20:17
+supposed to go between Z and 5 volts and
+20:19
+we're feeding into something that's
+20:20
+expecting 5 volts and we give it 6 volts
+20:23
+uh that that could be a problem and the
+20:25
+reason that this is happening is you
+20:27
+know our power supply is over here and
+20:29
+we've got all this wire that's
+20:30
+connecting it to the board and you say
+20:32
+well the wire is just GNA it's a
+20:34
+conductor you know just electrons flow
+20:35
+right through no problem well almost you
+20:38
+know in a perfect world sure that's how
+20:40
+wire would work but uh we're we're not
+20:42
+in a perfect world and so uh this this
+20:45
+wire has some impedance uh it's actually
+20:47
+acting as an inductor so when you run
+20:49
+current Through the Wire you get a
+20:51
+magnetic field that builds up around it
+20:53
+and that magnetic field is going to
+20:54
+resist changes to the current that flows
+20:56
+through that wire and so when we try to
+20:58
+pull more current uh we get a little bit
+21:00
+of a of of an impedance that's resisting
+21:03
+that and so I demonstrate this by uh
+21:07
+getting all of this wire out of here and
+21:09
+hooking up this uh short short USB cable
+21:14
+uh that I've that I've hooked up and uh
+21:18
+plug that in and there you
+21:20
+see this comes up a lot faster uh is one
+21:24
+thing you'll see and you also see it
+21:25
+doesn't go above 5 volts still doesn't
+21:28
+you know takes a little bit of time to
+21:29
+settle in but this is much better we're
+21:31
+staying in Spec we're not going above 5
+21:32
+volts it's turning on pretty quickly um
+21:34
+and that's just because we don't have
+21:35
+all of the impedance in this wire we do
+21:37
+still have impedance you know from here
+21:40
+through the traces inside this
+21:42
+breadboard you know and into the chip
+21:44
+and everything so there's it's still not
+21:46
+still not perfect which is why it
+21:47
+doesn't look perfect here but a lot
+21:49
+better but of course we don't want to
+21:51
+have a short little power cable like
+21:54
+this we want to be able to not have our
+21:57
+extension cord run all the way to it uh
+21:59
+so let's plug this back in and see what
+22:01
+else we can
+22:02
+do so we're back to that crazy overshoot
+22:06
+the other thing we can do is if we put a
+22:08
+capacitor just across our power
+22:10
+connection here uh that capacitor can
+22:13
+sort of uh you know get charged and then
+22:17
+when this chip wants to pull more
+22:18
+current it can pull it from the
+22:19
+capacitor so if we just take a this is a
+22:21
+0.1 microfarad capacitor and just stick
+22:23
+it right across those power pins boom we
+22:27
+get we get basically the same thing and
+22:29
+that's because you know the power supply
+22:30
+has capacitors in it it's doing
+22:32
+essentially the same thing uh that we're
+22:34
+doing with this capacitor here now
+22:36
+ideally what you'd want to do is you'd
+22:37
+want to get this capacitor as close as
+22:39
+possible to the chip and put it right
+22:41
+across the the power pins on the chip um
+22:45
+and if you look in you know any any
+22:47
+Electronics uh every Chip is going to
+22:49
+have a capacitor or maybe multiple
+22:51
+capacitors sitting right next to it uh
+22:54
+to to smooth out these current
+22:55
+transitions um you know I'm not going to
+22:58
+get too crazy with it I think you know
+23:00
+with this computer we're building we're
+23:01
+not running at a super high speed and so
+23:03
+if it takes a little while to come up
+23:05
+and stabilize it's you know not too big
+23:07
+a deal so what I'm going to do is just
+23:09
+put one of these little 0.1 microfarad
+23:11
+capacitors on each breadboard and
+23:13
+hopefully that'll be good enough Okay so
+23:14
+we've added our 0.01 microfarad
+23:17
+capacitor here to pin five and we've
+23:19
+also got a 0.1 microfarad capacitor just
+23:22
+sitting across our power pins and so I'm
+23:23
+going to move that over here uh just so
+23:25
+it's a little bit more out of the way
+23:27
+but it's still connected to to the board
+23:29
+across the power pins which which I
+23:31
+think is good enough but there's one
+23:32
+other thing that the data sheet
+23:34
+recommends which is pin 4 which we don't
+23:36
+have anything connected to and I didn't
+23:38
+draw it on the diagram here but what pin
+23:41
+4 is is it kind of gives you this other
+23:44
+connection here to to the reset of the
+23:47
+latch so it gives you kind of a direct
+23:49
+Connection in here uh to to just reset
+23:52
+this latch if you wanted to and actually
+23:54
+I should draw it it's a inverted input
+23:57
+uh it's not it does not hooked up
+23:58
+exactly like this but it this is
+24:00
+basically how it functions is if you
+24:02
+bring pin 4 Low it'll just force this
+24:04
+latch to reset it overrides anything
+24:06
+that that's going on over here uh so
+24:09
+normally we wouldn't want to bring that
+24:11
+low unless we wanted to reset this and
+24:13
+so what the data sheet recommends doing
+24:14
+is to prevent it from accidentally you
+24:17
+know going low if there's some stray
+24:19
+voltage or something it recommends if
+24:21
+you're not using it to just tie it to 5
+24:23
+Vols so if we just connect that to 5
+24:26
+volts then this wall always be high
+24:29
+which means we're not going to be you
+24:30
+know inadvertently resetting this if
+24:32
+there's just some noise so that's just
+24:33
+something else we'll do and then the
+24:35
+last thing I wanted to do is I want to
+24:37
+be able to control the the speed of this
+24:40
+thing so we have it blinking at this you
+24:41
+know 3.8 times per second or whatever it
+24:44
+is uh which is which is great but it
+24:46
+would be nice to be able to control it
+24:47
+and of course you can change out the
+24:49
+capacitor change out these resistors and
+24:51
+and you know hopefully you you know you
+24:53
+can you can kind of uh see how to do
+24:56
+that and but what would be really nice
+24:58
+is to add a you know change this 100K
+25:00
+resistor to a variable resistor and so I
+25:03
+have this 1 megaohm variable resistor
+25:06
+and you just turn this and get a
+25:08
+different resistance and it goes from 0o
+25:11
+ohms so just a short all the way through
+25:13
+one 1 Mega ohm which is 10 times more
+25:16
+than this uh and so what we can do is we
+25:18
+can add this to the Circuit here and uh
+25:22
+what we can do is we can hook that up in
+25:24
+place of this this 100k this 100K
+25:27
+resistor so if I take the 100K resistor
+25:30
+out and what I'll do is just uh hook up
+25:33
+some jumper wires from uh you know pin
+25:37
+six and seven right we want to connect
+25:39
+between pin six and seven uh and I'm
+25:41
+just sticking it over here with these
+25:42
+jumper wires because this is too big to
+25:44
+just Jam right in there like the little
+25:46
+resistor was um but the other thing I'll
+25:49
+do is I'll put it instead of just
+25:51
+hooking this uh variable resistor
+25:53
+between pins and six and seven by itself
+25:55
+you know because when you turn it down
+25:57
+it goes down to0 vol Vols that would be
+25:59
+a a direct short between 6 and 7 which
+26:01
+would mean that when our our clock turns
+26:05
+off the capacitor instead of discharging
+26:08
+like this the capacitor will discharge
+26:09
+almost instantly through here if there's
+26:12
+no resistor there at all and so then you
+26:14
+know basically this would never go low
+26:16
+because as soon as this goes low it
+26:17
+would instantly almost instantly um go
+26:20
+high again so we don't really want that
+26:21
+so what we can do is we can put another
+26:23
+resistor in series with our variable
+26:25
+resistor and that'll you essentially act
+26:27
+as as a minimum value so I'm going to
+26:30
+put in this 1K resistor um between the
+26:34
+other pin of our variable resistor and
+26:37
+uh pin seven there so you know if this
+26:40
+is turned all the way down it's one it's
+26:41
+1K and if it's turned all the way up
+26:43
+it's one Meg or 1.001 Meg or whatever
+26:47
+whatever it is um so let's hook that up
+26:51
+again and see what we get and it looks
+26:53
+like it's on oh there it goes yep it's
+26:55
+just going really slowly and of course
+26:57
+we can uh turn turn this knob and get it
+26:59
+to go
+27:00
+faster there it's going a little bit
+27:02
+faster and we can turn it even more and
+27:05
+it goes even faster and if we turn it
+27:06
+all the way it's I don't know if you can
+27:08
+see that I can see it's uh basically
+27:09
+flickering because it's just going so
+27:11
+fast because right now with this turned
+27:13
+all the way down we just have a 1K
+27:16
+resistor and so when it's charging it's
+27:18
+charging through 2K of resistors and
+27:21
+then it's discharging through 1K and so
+27:23
+you could probably do the math and
+27:24
+figure out how fast that's
+27:26
+flashing but uh I like that I can get it
+27:29
+kind of dialed into to whatever speed we
+27:30
+want if we want to go really slow you
+27:33
+know again we're using this as a clock
+27:34
+for a computer so we may uh we may want
+27:36
+to go really slow to see exactly what's
+27:39
+going on we can do that uh but we might
+27:41
+also want to just manually control the
+27:43
+clock uh by by pushing a button so we
+27:46
+can go as you know as slow as we want
+27:48
+and so we'll look at that in the next
+27:49
+video

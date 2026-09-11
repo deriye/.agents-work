@@ -1,0 +1,241 @@
+I made this whole series of videos on how to build this 8-bit computer, but in this video
+I want to get a bit philosophical and ask the question: Is this thing really a computer? And if not, why not? What's it missing?
+And obviously, even if this thing is a computer, it's a very limited computer. I mean our clock is incredibly slow;
+we can speed it up a bit, but even then, the maximum clock speed—at least with the components I'm using—
+looks to be about 300Hz here which if I compare that to the computer I'm using to edit this video,
+that's got 2.8GHz so it's almost 10 million times faster.
+But that's not the point; sure, this is limited and in fact the memory—instead of 16 gigabytes—
+we only have 16 bytes because we have 4-bit address.
+But I'm not asking is this a limited computer; I'm asking something a little bit more philosophical, which is
+Is this thing a computer at all?
+So, to answer that I think we've got to look at two things: one is what is this thing currently capable of?
+And then, second, what should a computer be able to do? And are we missing anything?
+So these are the instructions we've got so far and there's a bunch of stuff in here. Load A, store A, add, subtract
+But one thing, just as an example, what about multiplying? We don't have an instruction to do that.
+And that certainly seems like something that a computer ought to be able to do is multiply two numbers, right?
+Okay, maybe we need to add a multiply instruction next.
+You know we could we could do that by by adding some additional hardware like we did for subtract and add
+So we've got an adder and subtractor here, maybe we can build some hardware to multiply two numbers, and you can do that
+You know it's just combinational logic to look at what's in this register, and what's in this register
+multiply those together put the result into the result register here, and then we need to add and some sort of
+Control signal here part add another bit to our control word for multiplication
+and
+Then you know put the appropriate thing in the microcode and add another instruction. So we could do that and then the computer would be
+Able to multiply but multiplication isn't the only thing that's missing here. I mean what about division what about?
+exponentiation what about
+Logarithms trigonometric functions, I mean we could go on and on about with all the functions that were missing
+But if we just keep adding new
+Instructions for each new function that we think up you know we're going to be adding instructions all day
+We're gonna be building you know custom hardware for each instruction
+Is that is that really what we want yeah?
+I would think that a
+Computer what we'd want is we want enough instructions to be able to program the computer to do any of those functions
+So so we ought to be able to write a program that can multiply you know. We've got an add instruction
+And multiplication is just a bunch of addition
+So it seems like we ought to be able to write a program that just takes two numbers
+You know perhaps. They're in in memory somewhere
+but before the program starts and
+And then run through that program and it would multiply those two numbers and output the result to the display here
+But it turns out that with the instructions that we've got here
+it's impossible to write a program that does that and I
+Would encourage you to you know give it a try look at these instructions see if you can write a program
+But I don't think it's possible
+Which brings up this really interesting question?
+Which is what instructions do we need and I don't just mean well if we had a multiply instruction would be able to multiply
+You know I mean what instruction
+What would be the minimum set of instructions we would need to let us write programs that would let us do any of these operations
+and
+Not just any of these operations, but but any operation
+Although even that like is that really what we want do we do
+We just want to be able to do any operation or do we really want enough instructions to be able to do any
+calculation which might involve lots of different operations
+I don't know it seems like maybe real computers are able to do more than just calculate things
+So maybe what we really want is enough instructions to be able to do anything computable
+But what does that even mean you know?
+What exactly is computable and what isn't I mean?
+We don't really expect a computer to be able to compute the meaning of life right so
+So it's maybe what we're after is is things that can be computed with an algorithm of some sort
+But even that just raises questions about what kinds of operations the algorithm can do and we're right back where we started
+though intuitively
+we all kind of know what sorts of things a computer can and can't do so you know maybe you know a computable problem when
+You see it
+But but without a rigorous definition of the set of computable problems
+You know how are we ever going to know if we've got all the instructions we need in order to compute anything
+So this question of what you need in order to compute anything?
+And you know what does that even mean, this came up pretty early in the development of computer science.
+Alan Turing is widely regarded as the the father of modern computer science, and you know one of the reasons is that in
+1936 he wrote a paper that talked about this very question
+And this is this is a copy of that paper and in here he makes this
+Astonishing claim which is that: "It is possible to invent a single machine, which can be used to compute any computable sequence" now
+It's not clear what he means by any computable sequence
+But he does talk about the machine in quite a bit of detail
+He described this hypothetical machine that actually seems relatively simple, so it reads its input from a paper tape that is
+Infinitely long, which is one of the reasons why it's a only hypothetical machine
+But this tape is is infinitely long in both directions
+and it has a bunch of squares on it and each of the squares contains a symbol in the
+simplest case that it works is you could have two symbols so either a space is blank or maybe it has the symbol 1 and
+Every every point on this tape has one of these symbols either blank or or 1 and
+then there is a
+Head that can move back and forth along the tape and it can look at just one symbol at a time and then
+after looking at that symbol it consults a
+You know a table of instructions that might look something like this and that table of instructions tells it what to do based on
+The the state it's in and what symbol it scans and so
+The machine, also has a notion of a state, so it might be in state A for example
+and so if we're in state A and the head is pointed to a 1
+then you know this is the line that we would look at in the table and so then what it does is it writes a symbol 1 to the tape so in the same position it writes a 1 in this case there's already a 1 there
+But if it were blank, then it might write a 1 there, and then it moves to the left
+So it moves to the left
+And it could be the head that moves it could be the tape that moves it really doesn't matter
+As long as you're consistent, and then it changes state to state C. And so now it's in state C
+Which means now when it looks at the table? It's looking just at these things that are in state C
+and in this case it's a 1 so it would erase the symbol there move to the left and then switch to state B and
+It just keeps doing this until it finds its way to a transition to where it halts
+And you know it may or may not actually ever get there
+But but if it gets there halts, and then once its halted then whatever answer whatever
+It's trying to compute would
+Be on the tape somewhere that you could then look at and so it turns out that with an appropriate table of instructions like this
+And some input you know encoded on the tape before the machine starts
+Then this machine a machine like this can carry out pretty much any mathematical tasks
+You just have to set up the right table of instructions
+And in fact, it actually gets better than that
+This universal computing machine that Turing talks about is just another machine like this that has a table of instructions
+That that lets it basically start with a tape that has a different machine's table of instructions encoded on it
+so that says the machine is supplied with a tape on on the beginning of which has written the this is a standard definition which
+He defines up here sort of reducing this table of instructions down to sort of a number that you can put on the tape
+of some other computing machine
+And then the universal machine can actually compute the same result that that other machine would compute so
+In other words this Universal machine can actually simulate
+itself or simulate any other machine like this
+And so that's what leads Turing to this bold claim that it's possible to invent a single machine
+Which can be used to compute any computable sequence.
+But this still leads us back to the same question of what do we mean by anything computable? What is this
+"any computable sequence". Well, even Turing admits that there really isn't a good answer to this so later on in the paper here
+He says all arguments which can be given are bound to be fundamentally appeals to intuition and for this reason rather unsatisfactory
+Mathematically, so he's pretty honest that there really isn't any good definition of exactly everything that a general purpose computer ought to be able
+To do but he does do his best anyway to kind of argue that his Universal machine that he's come up with
+can do everything it needs to but he says here the arguments are kind of a direct appeal to intuition or
+You know proving that it's equivalent to some other definition in case
+You know, you like the other one better
+And failing that he gives a bunch of examples of different things that that he can compute with this
+But ultimately it's not a super satisfying answer to what does it mean that you can compute anything that's computable
+Now at about the same time in in 1936 there was this other guy
+Alonzo Church who was trying to figure figure that same thing out and so he wrote this paper, which which says
+You know the purpose of this paper is to propose a definition of effective calculability which is to correspond satisfactorily to the somewhat vague
+intuitive notion in terms of which problems this clause often stated
+So so he's trying to nail down an actual definition of what is this you know idea of everything that can be calculated
+But the interesting thing is he comes at it from a completely different direction so in this paper
+He comes up with this whole new system of mathematics called lambda calculus, which starts with just a few rules
+And these are this is really it you've got variables
+And then you've got the ability to define a function so you can say a function that takes a variable X and
+Returns some other expression and again that other expression has got to come from this list or be built from this
+And then you have the ability to apply a function so you can you can give a function and give it some parameter.
+From this he's able to argue that you can build on this to calculate anything calculable again
+whatever whatever that means and
+You know when I say you can build anything on just these rules you know I mean it so see how there there aren't any
+Numbers here? So when you're defining a function here all you have is these abstract variables you don't have numbers. You don't have
+Boolean values you don't have anything to work with you have to define all of that and so
+Here on page 3 of his paper. He's actually defining. You know here's some abbreviations for the numbers 1 2 3
+And so on so so this is a very fundamental
+very abstract way of
+Describing computing which is pretty wild stuff and it would be the topic of a whole other series of videos
+but
+But the reason that I bring Church up is that the invention of lambda calculus
+was actually just a tool in this paper to get to his real conclusion which was
+Which was also to show that that not every problem of this class is solvable so some of these computable problems
+Not everything that's computable can actually be solved
+And again, I won't go into the details of what exactly with that that means
+But the point is that at the time this was an open question that no one actually knew the answer to
+Which which is why this paper was was so important?
+But what's really remarkable is that this question which which was also known as the decision problem?
+Or or more commonly at the time in German. It was known as the Entscheidungsproblem (which I'm probably horribly butchering)
+and this problem was simultaneously answered by Turing's paper and both of these were published in 1936
+And so Turing and Church independently solve this unsolved problem at the same time
+Not knowing about each other's work, and they did it in completely different ways
+Which is pretty remarkable because I think any time you can solve the same underlying problem using two completely different methods that that at first
+Don't seem related
+you know it suggests that there there might be some you know deeper more fundamental connection between these things and
+Indeed as soon as Turing heard about Church's work, he added this appendix to his paper
+In August 1936 he added this appendix where he basically proves that everything that lambda calculus can do so effective calculability
+Is is basically the same as computability so everything that lambda calculus can calculate
+It is something that his machine can compute and the converse everything his machine can compute is something that that
+Can be calculated with lambda calculus and Church also came to the same conclusion and actually introduced the term to Turing machine
+Which is now what we call
+What Turing was originally calling the automatic machine
+So in other words a Turing machine can completely
+simulate lambda calculus and lambda calculus can completely simulate a Turing machine they're
+computationally equivalent
+And so all of this comes back to this question of what do we mean by computability?
+Well, you know what is anything computable. What is anything calculable. Well. It's still this this kind of squishy intuitive
+You know it when you see it kind of thing but with Turing machines and lambda calculus being these these very different things
+That that turn out to be identical in terms of precisely what they can compute
+Perhaps there is a single definition of computability and so the result is that there's this widely accepted thesis that the church-turing thesis
+That says that when we say that something is computable that means it's computable by a Turing machine
+So so an algorithm is is defined as anything that can be computed on a Turing machine, and that's it no more, no less
+So if we want to make sure our computer is truly flexible enough to be programmed to do pretty much anything
+You know as long as we make sure it can do anything a Turing machine can do then
+Well know that we can program it to compute anything computable
+So even though you know we can't write a program now to multiply two numbers
+if we if we just ignore that
+For a moment moment and just focus on you know making sure the computer can do everything a Turing machine can do you know when?
+We're done with that
+Then we'll know that we'll be able to write a program to do multiplication since you know surely
+Multiplication is something that can be computed and not just multiplication. You know all of the amazing things that modern computers
+Do are are based on on just this ability to compute any computable function you know that the brightness of this red pixel here is
+Is really just the computation of a complex function with a bunch of different inputs that are constantly changing and being recomputed?
+So if we go back to the instruction set for a computer you know when we started we're trying to figure out
+Why we can't just use this add instruction somehow to write a program to multiply two numbers
+And you know the problem is that our instruction set doesn't let us do everything a Turing machine can do, so let's figure out
+What's missing if we think about what a Turing machine can do a Turing machine has a tape that can move?
+You know left or right one position at a time and read or write the data at that position, so well. We've got RAM
+We've got a load A, we've got a store A command
+and
+You know RAM is random access so we can read or write any position whenever we want so that's certainly at least as powerful as
+A Turing machine in terms of being able to to read and write data from the well in our case the RAM
+But the Turing machines case the tape
+But the other thing the Turing machine can do is that after reading a cell it can take a different action?
+so if the cell is blank it can move right if the cell is a 1 it can move left so it can take a
+Different action based on what it reads
+And we can't actually do that none of the instructions that we have actually does anything different based on the result of of any data
+read from anywhere
+So one thing that would give us that is a conditional jump instruction so something just like the jump instruction that we've already got that
+skips to another instruction
+But that only jumps sometimes based on some data value so for example
+We have this program here if we load some data from address 14, and we subtract some some other data. That's in address 15
+We might have this conditional jump instruction that
+Conditionally jumps if the result of this subtraction is negative so in other words if the second value that we load is
+Bigger than the first value in that case it jumps down to line six here and it does some stuff down here
+Otherwise if the result of this subtraction is is not negative so this the second value here is not bigger than the first value
+Then this this conditional jump instruction. Just doesn't do anything at all and
+Execution just continues and we do this other stuff here, and then once we're done doing that other stuff
+We might have a jump instruction that then that jumps us past
+That at first block and continues execution down here
+So this is basically kind of the same thing as if then else kind of thing so you might almost imagine it
+Looking looking like this in a different language. So you could say like if you know some value in memory address 14
+- memory address value and 15
+Is less than 0, so we're loading 14, 15 subtracting that if that's less than 0 then we do some stuff
+So that's this stuff here, otherwise we we do some other stuff which is this stuff here
+And maybe it seems weird to have this instruction that says jump if the result of the previous subtraction is less than 0
+That's kind of a weird thing
+But it actually really doesn't matter what the conditional jump is actually looking at as long as we're able to take some kind of different
+Action based on something discernable in memory that's enough to do what a Turing machine is doing
+So just by adding one new instruction our computer will be turing-complete
+Which means it can do anything a Turing machine can do which means it can compute anything computable?
+Which is an awful lot so in the next video
+I'll build the hardware for conditional jump
+So we can actually turn this thing into a real computer and also actually write that program to multiply two numbers
+Just to show that it's possible once It's turing-complete
+You may want to try
+Writing that program yourself
+Well while you're waiting and maybe also think about you know what what sort of conditional jump
+Instruction you would add because there's lots of different potential types of conditional jumps
+We could add you know it doesn't really matter, which one we add
+But you know you may want to think about that and and think about how you'd write a program to multiply now
+There's one other thing that you might be wondering you may remember me mentioning that a Turing machine
+uses this
+Infinitely long tape and you might be wondering how we're going to
+Be able to do everything the Turing machine can do with only 16 bytes of memory
+Well you got me on that one that that's definitely a limitation so so in practice this will never truly be
+Equivalent to a Turing machine because it will never have infinite memory
+But hey you know neither is any computer and since 16 bytes of memory is
+Not much further from infinity than 16 gigabytes of memory. I say will be close enough
+You

@@ -1,0 +1,149 @@
+Let's look at how we'd actually write a program
+and how a program would actually get executed.
+So I've written a program here that basically says "LOAD A 14"
+and so what that's saying is "load the contents of memory address 14 into the A register".
+And then it's saying "ADD 15"
+and what that means is "add the contents of memory location 15 to the A register
+and put the result in the A register".
+And then the last instruction is "OUT",
+and what that instruction means is
+"take the contents of the A register and output it to the display".
+Now you might be wondering,
+"where did these commands come from? Why does "LOAD A 14" mean that?"
+And this is actually a really cool thing, we're building this computer ourselves
+and so we get to define what the language is,
+we get to define what these commands are, so I made these up.
+And really, we can come up with any commands that we want, as long as it's
+some operation that we can actually do with this computer.
+And we can call them whatever we want,
+and we can come up with whatever we want.
+So this is just what I've come up with: this "LOAD A" command,
+and I've decided that what that means is it means to "take whatever is in
+the location that's referred to in memory and put it into the A register".
+And then I've decided that this ADD command, what it means is "take whatever is in
+this location and add it to the A register and leave the contents in the A register".
+And then the output command of course just means "take whatever is in the A register and output it".
+And so this is, we can come up with whatever commands we want. If we wanted to subtract,
+we could do that, the computer knows how to subtract,
+if we want to move things into the B register, we could have a command that does that,
+Anything that we can do with this computer, we can make a command to do that
+So then, how do we actually program these things into the computer?
+So for that, we want to put these instructions in memory,
+because the computer is going to execute programs from memory.
+And again, we're making the computer, we can make whatever choices we want to make here,
+but what I think makes sense
+is for the first instruction to go at memory location zero,
+and then the next instruction to go in location one,
+and then the last instruction here to go in location two.
+That seems to make the most sense just start at zero, one, two.
+So, the memory locations for these are going to be
+0000, 0001 and 0010
+so that's where in memory these these commands are going to go,
+but how do we actually put this command "LOAD A 14" into memory location zero?
+Because "LOAD A" is not, you know, this is an 8-bit value, "LDA" or "LOAD A" is sort of a mnemonic word
+And so again, since we're building the computer, we get to make the decision here
+of what this is actually represented as in binary.
+So, since we get to make up this command, we also get to make up what value it corresponds to, so
+I'm going to say "LDA" corresponds to 0001.
+That's "LDA" and so that will be the first 4 bits,
+and then the next 4 bits of the command are going to be the actual memory location that we're loading from,
+so in this case 14.
+And so 14 in binary is 1110.
+So this "LDA 14" command, we're actually going to put it in memory as 0001 1110,
+and that corresponds to "LOAD A 14", and again, we're just making this up,
+I could have used any 4-bit value as long as I'm consistent with that value meaning "LOAD A"
+So same thing with "ADD", of course I can't use 0001 for "ADD", I have to use something different,
+so I'll just use 0010, I'll just use 2, and so that will be the binary representation of "ADD".
+And then of course along with the "ADD" instruction we've got to tell it
+what address to add the contents from, and so that's 15, which is just all ones.
+And then "OUTPUT", again this is a new command, we get to decide what the representation is,
+I could go with 3, or I could go with anything I want, I could just go 1110
+and I think that will be what our "OUTPUT" is.
+And in this case, you know, "OUTPUT", I'm going to say this command says
+"take whatever is in the A register and output it to the output display".
+And so I don't really need to tell it anything else here so the other four bits could be anything that we choose,
+so we'll just set them all to 0, and you'll see when we actually build this output command in the logic here,
+we'll just ignore — we won't use those four bits for anything so they could really be anything.
+But of course you could imagine having a command that says "output from memory"
+and then a memory address, and it would go fetch the contents of that memory and output it.
+You could very easily define a command [for that], but we're not going to do that just yet.
+So this will be the program that we try to program in here,
+And so we can program it just by setting those values into memory, so what does that mean?
+So if we want to be in programming mode here we go to address 0
+So we're at address 0 and we want to set this: 0001 1110
+so 0001, 1110.
+And we'll program that in, and so now at address 0 we've got that command.
+So then we'll go to address 1 here and then we'll put in this
+so 0010, 1111,
+and we'll program that, so now we have our second command in memory
+and then we'll go to address 2, our last command,
+and program in our "OUTPUT" command, so that's just 1110, and then actually the rest
+don't matter but I'll set them all to zeroes and program that, so there's our "OUTPUT" command.
+So now we've actually programmed our computer, we've put the program in the computer.
+Of course it's not going to work because we don't have any control logic yet,
+but we can start to step through and see how this might actually work once we build the control logic,
+so we'll get a sense of what the control logic needs to do.
+And of course for this program to make sense, what we're saying is that we're loading the contents
+of memory location 14 and we're adding to it the contents of 15 and we're outputting that.
+So we need to put some data in address 14 and 15.
+So if I go to 14 it's got some data here
+let me put some other data, so if we go here to address location 14, which is 1110,
+and 15 which is 1111, I'm going to put some data here, let's say 0001 1100,
+and in this location we'll say 0000 1110.
+And this if we convert it to decimal is 28, and this is 14.
+And so what this program is really going to do is it's going to say "load whatever is in location 14, which
+is the number 28, into the A register, add whatever is in 15, so it's going to add 14 to that,
+and then it's going to output whatever the sum of those two numbers is.
+So at 14, so I'll program in the first number,
+and then we'll go to 15 and program in the next number.
+So we've got 14 and 15.
+And if we go back to 0, we've got our first command there.
+Let's switch that back to program, so the memory address is no longer controlled by the dip switches,
+it's controlled by the memory address register.
+So now we've got this program programmed in here, and obviously it's not doing anything, but of course
+there's no control logic, so it wouldn't do anything,
+if we had the control logic built already then it would pretty much run, but that's obviously not happening.
+So we need to kind of step through this step by step, and I need to essentially
+manipulate these control lines to do what the control logic would do if it were built, and that way, that should
+help you understand what it is we're actually trying to do when we build the control logic.
+So, to step through step by step, I'm going to stop the clock, and we can still step the clock manually
+by pushing this button,
+And so we're going to go super slow through this and go step by step.
+So the first thing that's going to happen when we start to execute a program, or really anytime we
+start to execute a command, is we need to load the command from memory and put it in the
+instruction register, because the instruction register is what tells us what command we're currently running.
+And so the beginning of executing any command is a fetch cycle, where you fetch the instruction
+from memory and put it into the instruction register.
+Now the other component that comes into play here is the program counter, which is up here,
+and the program counter is going to count through which instruction we're on, and it starts at 0, which
+is where it is right now, but once we execute the first instruction it is going to go to 1, and then 2,
+and then it would keep going 3, 4, 5 and so forth until we stopped executing our program.
+So our program counter is at 0, which is where we want to start,
+and the first instruction that we want to fetch from memory is in memory location 0.
+But in order to get to memory location zero, of course we're already there but
+we're just sort of there by accident. Really, to get there what we need to do is we need to take
+the program counter, the contents of the program counter, which is 0 in this case, but as we get
+to the next instruction you'll see it's one or two, we need to take the program counter and move that value
+into the memory address register here. So what we're going to do is
+we're going to say program counter out, so counter out (CO), which is here,
+and then memory address register in (MI), which is over here.
+So this is going to take the program counter and put its value onto the bus, and so there's a 0 on the bus,
+there's a 0 here — this is not going to look very interesting — there's a 0 in the program counter,
+there's now a 0 on the bus, and then we're going to take the 0 from the bus and put it into the memory address register.
+And so all of that is going to happen on the next clock pulse. So there's the clock pulse, and yeah that 0 just
+went over there, I'm not sure if you saw it. But no, that 0 went over there.
+It will be more interesting for the next instruction, trust me.
+So the first thing we did, so we're executing this "LDA", which is "LOAD A 14", that's the first instruction we're
+executing and the first thing we did is we said "program counter out" and "memory address register in",
+and then we pulsed the clock. So this is the first thing we did.
+The next thing we're going to do is we want to take the contents of memory, so now that this is pointing
+at 0, of course it was before but just bear with me, this is now pointing at address 0,
+so what we're seeing here is the contents of address 0, which is this here, this 0001 1110, which
+is the "LOAD A 14", so this the "LOAD A 14" command. We need to move that to the instruction register.
+And so to do that, what we want to do is turn all these things off,
+and so for the next clock cycle we want to take the "RAM out" (RO), which is this here,
+so "RAM out" and you can see the contents of RAM is now on the bus,
+and then we want to say "instruction register in" (II), which is right here.
+So we're going to say "instruction register in", and of course nothing happens yet until the clock pulse,
+which is good because that gives us time to set up and change what's going on
+in the control logic here, before the next clock pulse.

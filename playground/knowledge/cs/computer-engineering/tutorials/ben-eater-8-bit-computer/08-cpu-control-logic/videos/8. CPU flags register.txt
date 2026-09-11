@@ -1,0 +1,408 @@
+In the last video I talked about what it means for a computer to be turing complete
+And why we need to build a conditional jump instruction in order to make this computer turn complete in this video
+I'm gonna actually build the hardware for conditional jump now in that last video
+I asked you what condition might make sense to use for the conditional jump and
+the two most common things y'all mentioned were to jump if the carry bit is set after an addition or subtraction operation and
+Jump if zero and since number of people suggested both of those I figured I'd implement both of them
+So jump on zero is straightforward enough. It. Just means that if the result of a computation is zero
+You know like it is here, then jump to a particular address otherwise just keep executing the program
+so if the result of this addition here works out to be zero then jump to address 9 and
+Do something down here?
+Otherwise just continue to address 7 and do something else and then we may end up skipping address 9 with a jump instruction later on
+Jump on carry means that the result of a computation
+For example adding two numbers if that result can't be represented with just eight bits then jump to a particular address
+you know
+Otherwise you continue executing the program so if the answer to to this addition works out to be more than 255
+Yeah, you know like in this case here. We've got
+I think this is 200 plus 100 if
+The result 300 can't be represented with just eight bits
+Then jump to address nine and do something down here
+Otherwise continue to address seven and do something else and then skip address nine
+So I'm actually going to build both of these the the jump carry end and to jump zero instructions
+Even though technically to be turing-complete we really only need a single conditional jump instruction of some kind
+You know so either the jump seer or the jump carry would be enough but having more variety of instructions like this
+Available just means that we can often find more efficient ways of writing particular programs, so it's nice to have a variety of different instructions
+now start with the jump on carry instruction
+Now it might seem like kind of a weird thing to have an instruction that says jump if the result of an operation like addition
+Doesn't fit in 8 bits, but it turns out it can be useful though
+I think the biggest reason to add that instruction is because it's relatively easy to do
+remember we're using two of these 74 LS 283 s in our adder and the 74 LS to 83 is a 4-bit adder and
+Remember the way, we're able to chain two of them together to get an 8-bit adder is by connecting the carryout of one
+Over to the carry in of of the next one and that's this connection right here the the carryout of this
+Chip is going to the carry in of this chip here
+So if the result of adding the first four bits doesn't fit in four bits then we can you know kind of carry the 1?
+Into this fifth bit well if the result of adding all eight bits doesn't fit into eight bits
+There's another carry signal coming out of this second chip right here that we're not doing anything with yet
+And just to see what that looks like we can hook an LED up to it so here we go
+it's currently not set which makes sense because we're adding zero plus zero and
+The answer is zero and of course zero fits within eight bits so the carry bits not set so now let's load a value
+into the a register so this is 200 in binary and
+so we've got 200 plus zero the sum is 200 as you'd expect and
+200 also fits within eight bits so no problem there carry bits still not set but now when you put something into the B register
+Okay, so this is 100 in binary and so now we've got 200 plus 100
+Well the result should be 300, but 300 doesn't fit in 8 bits because with 8 bits we can only go up to 255
+So instead what we have here is 44, which is the remainder? We're left with since we don't have a
+256 is place
+So, but instead the carry bit is set and so this tells us that the answer in the sum register
+Isn't really the sum of 200 plus 100 which might be a good thing to know
+But it also means we know that we have the raw information
+That we need in order for our jump carry instruction, which is which is very convenient
+Now the other instruction that a number of you suggested building was a jump on 0
+And and that just means that if the result of a computation is 0 then jump to a particular address otherwise keep executing the program
+So how can we tell if the result is 0?
+well unfortunately we don't have a single bit sitting around that that just tells us whether the result is 0
+Like we did with the carry bit so we need to build some some logic
+So how do we know if the number is equal to 0?
+well
+It's going to be equal to 0 if each of the bits is
+Zero, and so how can we tell if all eight bits are zero?
+Well, we could use an or gate. So if you look at the truth table for an or gate
+You can see that the output goes low
+Anytime any of the inputs are high?
+or in other words the only time that the output is high is if all of the inputs are low so if we had a
+Let's say an eight input nor gate
+We could just hook all eight bits of our number up to the eight inputs of the nor gate
+And the output would only go high if all eight inputs were low in other words
+It would tell us if our eight bit number was zero now you can get eight input nor gates
+And if you've got one you can definitely use it, but I don't happen to have any
+But but that's okay we you know we can actually build it with this one and this gives us four nor gates
+And so we what we could do is hook two bits up to each and then
+That will tell us of each pair of bits is zero
+and then as long as all of the pairs of bits are 0 then wouldn't we'll know that the whole number is 0
+So we need to take the outputs of these 4 nor gates, and and them together and so to do that
+You know we can use sum and gates and again
+It'd be nice to have a 4 input and gate, but if all we have is two input and gates
+You know we can work with that so what I'm imagining is
+We'll build something like this so both inputs are 0 this is a 1 if both inputs are 0 here
+This is a 1 if both of these are ones and this is a 1 and
+Then the same thing down here, and if both of these are 1 then
+This is a 1 so the output will be a 1 if all of the inputs are 0
+Otherwise the output will be a 0 so this is this circuit here. Will let us determine
+Where there are 8 bits input is or all zeros and then we can use that to control our conditional jump?
+So build up that 0 evaluating circuit over here in some space. That's free near the ALU
+so this is the 74 LS 0 2 with the 4 nor gates that we'll use to nor each pair of bits and
+This is the 74 LS 0 8 with the four and gates that we'll use to combine those and of course
+We'll just use 3 of those and gates like any of these other chips. I'll hook up power and ground to each of them
+and so I start by connecting the logic between the gates before I worry about hooking up the 8 inputs so the outputs of the
+Fork nor gates are going to go to the inputs of two of the an gates
+So I'll hook the the outputs of the 2 nor gates on the bottom to the 2 inputs of one of the an gates on
+the bottom
+And I'll hook the outputs are the two nor gates on the top to the inputs of one of the in gates on the top
+So that's these four connections and so next I'll connect the outputs of those two and gates to the inputs of a third and gate
+So the output of that top and gate is right here
+And we'll just connect that right over to the input of the an gate next to it
+And the other input comes from the output of that bottom and gate
+going into the second input on the top and
+The output of that third and gate is going to tell us whether we've got a zero or not so for now
+I'll just hook that up to an LED so we can see whether we've got a zero
+Next we need to hook up the inputs the the eight inputs here
+Which is going to be the 8-bit register that we want to check if it's zero or not now
+I could hook this up to the eight bits of the a register
+And that would tell us if the a register is zero which would let us build a jump if a is zero instruction
+But I'm actually not going to do that instead
+I'm going to hook this up to the some register because that gives us some more flexibility now
+Why is that so first if if we load a zero in the B register?
+Then the some register will be the same as the a register since it's a plus zero. It's going to be the same
+So we haven't lost anything by looking at the summer interest err rather than the a register
+You know we can still use this to build a jump, if a is zero instruction even though
+We aren't looking directly at whether a is zero
+But it also means if we wanted to we could write micro code for even more conditional jump instructions like
+Jump if a equals a particular value so for example if we wanted to jump if a equals five like like it does here
+Then we could put a five in the B register
+Turn on the subtract bit
+so we're subtracting B from a and since a
+Equals B. When we subtract we get a zero and so we could jump if a equals five so
+Hooking our new zero detecting circuit up to the some register is definitely the way to go since I think it'll give us a lot
+more options
+So I'll hook each of the eight bits of the some register up to the inputs of our for nor gates
+And it doesn't really matter which bit goes to which input or which gate since we're really just trying to tell if they're all zero
+So it doesn't matter what order? They're in
+Okay well now that's all hooked up, so if we hook up our here
+We can see that the output is on so the zero is on which is good because we've got a zero here in the some
+Register so me put something else in some register, and we see our zero signal turn off which is good
+So it seems like it's at least initially it seems like it's working. Okay, so now
+We've got our carry bit and our zero bit
+So how are we going to go about using these to build conditional jump instructions?
+well it turns out that there is a problem with the way that these are set up right now and
+to see what that problem is let's take this snippet here from a
+Potential program where we're trying to do a jump if carry instruction
+And so what we're trying to do here is we're trying to add some value
+that's in memory address 15 to the a register, and then if the result of that addition is
+Is greater than 255 in other words it sets the carry bit then we want to jump to address 5 otherwise?
+We just want to continue executing the program
+Now in order to see what the problem is here. I've written out the micro instructions for the add command and
+Remember that all of our instructions are made up of micro instructions so the add command you've got the to fetch
+instructions which are common for all of the instructions
+And then the three additional micro instructions that the add command has and so I've just written out the control word bits
+That are set for each of the five steps of the add instruction and so we go step by step
+And see what the problem is that I'm talking about and so let's say we're running a program
+And we've got a value of 254 here in the a register like we've got and we come across these instructions
+So so let's step through that so the first two micro instructions here for for any instruction are fetching the instruction from memory
+so I'll just step through both of those and
+Once I've step through both of those
+We've got the add
+Instruction here in the instruction register so the opcode for ADD is 0 0 1 0 so we've got that and then the 15 here
+Is the 1 1 1 1 so the next micro instruction in our add instruction is saying instruction register out memory address register
+in
+So we're going to move this 15 to the memory address register
+And there it is and that lets us get at the value that that's stored in memory at address 15
+So then the next micro instruction is going to take that value from memory and put it in the B register right so that's RAM
+out B in so it's going to take this value put it in the B register and
+Now that we've done that you can see we've got 254 plus 3 equals 1 well
+He'll of course 254 plus 3 doesn't actually equal 1 equals 257, but since 257 doesn't fit in 8 bits it wrapped around
+And our carry bit is set as you can see here
+Which is great?
+You know the next instruction is a jump if carry so that means we'll want to actually do the jump
+But but we're getting a bit of ahead of ourselves because there's still one more micro instruction here
+Before we're done with our addition and this last micro instruction takes the result of the addition and puts it in the a register
+Right so some out a n because when we say add 15
+You know what what that what that means is add the contents of memory address 15?
+To the contents of the a register and then put the result back in the a register, so let's do that
+Okay, so now r1 has moved into the a register here, and we're done with the add instruction
+But we've got a problem
+What happened to Carrie bit?
+yeah, the add instruction we did resulted into Carrie right we did 254 plus 3 we got 1 except there should be a carry and
+The next instruction is a jump if Carrie so it needs to know about that, but we've lost that information
+So what do we do about that you know?
+How do we keep track of whether this add or subtract an instruction that we're doing here?
+Resulted in a carry or not if at the end of the instruction the carry bit isn't said anymore well
+We've got to do is that on the last micro instruction here where we take the result and put it into the a register?
+We've also got to take the result of the carry bit and the 0 bit for that matter and put them somewhere
+So how can we store these two bits?
+You know somewhere where we know they won't change unless we explicitly update them at a particular time during the execution
+Well what we need is is basically another register?
+just like we're taking the result of the of this addition from the sum register and
+Putting that into the a register
+What we want to do is take the the result of the carry bit and the 0 bit and put them into their own special
+Register which in in our case what we'll do is well
+We'll create another register
+and we'll call that the flag's register to keep track of the the carry flag and the zero flag and
+Having a Flags register to track things like this is actually pretty common so for example
+This is what the flags are just for the Intel x86
+Processors looks like you can see it's a 32-bit register with with the number of the bits used for different things
+But even up you know a popular modern processor like this has a carry flag
+just like what we're building and
+A zero flag just like what we're building and you can see you know down here talks about the carry flag says
+it's set if in a
+arithmetic operation generate to carry or borrow out of the most significant bit of the result cleared
+Otherwise and that's exactly you know what our carry bit does
+Indicates an overflow condition and the zero flag said if the result is zero cleared otherwise
+So this is exactly what we're building, and if you're interested in some of the rest of this stuff
+You can check out the whole Intel developer's manual which I'll put a link to below
+But you can see you know even a modern processor might have over a dozen or so flags with you know in some cases up
+To 64 bits reserved for the flags register our Flags register only needs to hold two bits
+You know for the 0 and the carry so we can use one of these same register chips that we use for
+most of our other registers one of these 74 LS 173 s
+You know will hold 4 bits so that's more than enough for our two bit register
+so basically the plan will be to take these two status bits the carry bit and the 0 bit and
+Feed them into two inputs of the Flags register here, so these are the inputs along here
+And then we'll be able to control when they're read in using the data enable signal and the clock line
+And once it's latched those values in then they'll show up here on the outputs
+And so it's the outputs here that will reflect the current value of the Flags register, so let's hook this up
+I'll start by disconnecting power from the computer, and I'll connect the power and ground pins of our register chip
+Okay, so now we've got five volts hooked up to VCC here
+We've got ground hooked up to ground and so now I'll just gonna go
+You know pin by pin and figure out where we want each one hooked up
+So pins 1 & 2 or M and n and those are the the output control
+And in our case we want the outputs always be enabled so
+These are just ANDed together, and they're active low you can see a little inverter things there
+So we want to tie both of them
+Low in order to have the output enabled and since we always want the output enabled
+I'll just tie both pins 1 & 2 to ground so here's pin 1 to ground and pin 2 to ground
+Next if we look we've got our 4 outputs
+You know 1 Q 2 Q 3 Q 4 Q those are just the outputs and so that'll actually tell us the value that's in
+The flags register so for now
+I'll just hook those up to LEDs just so we can see what's in the flags register and
+Since we're only using 2 bits from this 4-bit register. I'll just hook up two of the LEDs
+Next is the clock input and remember that a register is made up of flip-flops
+Which store the input value a particular momentary point in time which is?
+Determined by the rising edge of this clock
+And so we want this register to be synchronized with all the other registers so that when we're capturing the result from the sum register
+were also capturing the flags at the exact same moment and
+So I'll hook the clock input for this register to the same master clock. That's synchronizing the rest of the registers
+Next are these g1 and g2 signals, and these are data enable signals that control
+You know whether the whether the register is is reading its input and updating its output on on this clock pulse or whether it's not
+Updating and just holding on to whatever value is already stored in the register
+And we definitely want to have control over the timing of when this register gets updated so this data
+Enable will need to be controlled by the control logic so we can have an explicit micro code instructions telling it
+When'd update so for example in our add instruction here. We'll want to update the flags register at the same time
+You know as part of this same micro instruction where we capture the result of the a register from the some register
+And like the output control
+There's two of them, but they're just ANDed together, so I'll just connect both inputs together
+so they're always just the same and
+For now I'll just set this high
+Which is inactive since it's an active low input and that way we can manually
+set it to test it out before we you know hook it into our control logic and
+Next we get to the inputs for our register, and these are pretty straightforward. We're just using two of them
+You know one is going to come from the carry bit here
+And
+The other is gonna come from the zero bit down here
+So we've got our carry bit and our zero bit going into the register here
+And then when the register is enabled to to Lachi in its input
+It'll latch that in and store it here on the output of the register and finally there's this clear pin
+and this just overrides and sets all the outputs to zeros and
+Since we've got the clear pins on all of our other registers hooked up to a master reset button
+I'll just hook this up in the same way so when we push that master reset button it clears the flags register -
+And last but not least I'll add some labels
+This is our new flags register, and of course can label the the bits here as our carry flag and zero flag
+So let's test it out
+I'll hook up power and
+We'll send up that same scenario that we looked at before we built the flags register now as we can test out the flags register
+And also just see how things might work differently with it
+so just like before all I put in this program to load a 2:54 into the a register and
+Then do an ad which results in a carry
+Ok so again. Just like before we're imagining
+We're running a program
+And we've got a value of 254 now in the a register when we come across these commands here
+So this ad followed by a jump carry, so we'll just step through step by step so the first two steps of the ad
+fetch the add instruction
+and now we can see we've got the 0 0 1 0
+Which is the opcode for ad and 1 1 1 1 which is 15?
+So we've got to add 15 there so the next micro instruction in our add instruction is instruction register out memory address register in
+So we're going to move this 15 from the instruction register to the memory address register there
+It is
+And that lets us get at the value of address 15 in memory and so then the next micro instruction ram out B in
+Takes that value from memory, which is a 3 in this case and puts it in the B register?
+So now that we've done that again
+You can see we've got 254 plus 3 equals 1
+And the carry bit is set so this is this is just like what we saw before
+And like before you know the next instruction is a jump if Carrie so that means that we'll want to actually do the jump
+So let's look at this last micro instruction of the add instruction
+so this micro instruction takes the result of the addition and
+Puts it in the a registers it takes this one puts it in the a register, but this time on this step
+We also want to take the results of these status bits in this case the carry bit which is set in the 0 bit which?
+Has not said and put those into the flag's register
+So along with the the sum out and the a in control bits
+We also want to set the flags in signal here, so let's do that, so we'll set that it's active low
+so I'm setting it low and
+Then now I'll pulse the clock once more to execute this sum out a in flags in control bits
+And okay now
+We've we've got that so we've got the answer which was one in the a register and now
+We've got the carry bit in the flags register even though now the carry bit down here isn't said anymore
+And so now that we've executed this last step of the ad we can disable the flags register again
+And it'll hold on to these values so if we continued running the this hypothetical program
+We'd have the information we need to know what to do with this jump carry instruction us sitting right here in the flags register
+Now you may have noticed that it that it now becomes important to control when we update the flags register and for this to work
+You know I had to be careful to just enable the flags register to update on this
+Specific micro instruction here now for that to be automatic
+What we'll need to do is add this enable signal that I'm just sort of manually controlling now
+To our our control word down here that controls all of our other control signals
+And conveniently since we're using two eeproms for a micro code
+we can have up to 16 bits in our control word and
+I'm only currently using 15 of them so that leaves us with a bit available here
+That we can use to control when the flags are just your updates
+So I'll connect that bit over to the control word and add a sixteenth
+Led so we can see what this last control bit is doing just just like the rest of them now
+I know a few people suggested using this unused bit to reset the micro instruction counter at the end of shorter instructions
+Which I think is a great optimization, but I didn't do that because I was planning to use it for this
+It'll also add a current limiting resistor to ground here since otherwise the output of the EEPROM will drive too much current through the LED
+and then we'll update the the label for this new signal as
+Fi4 flags register in
+So there we go and now all of these bits in the control word are active high signals so to keep things consistent
+Since the data enable line over on the 74 LS 173 is active low
+I want this flags in signal here to to go through an inverter before hooking it up to the control signal on the register itself
+Fortunately, there's a spare inverter on this 74 LS 0 for chip right here so the control signal can go into the inverter so here
+We've got the control signal now going into the inverter and then coming out of the inverter
+We'll have an active low signal which we can run up to the data enable pin on our flags register
+and I'll just tidy some of this up and
+There we go and so now our micro code here will be able to control exactly when we load
+New data into the flags register so of course
+We'll need to update the microcode and reprogram these microcode eeproms for that
+But we're going to need to make some other changes to the microcode - you know
+We'll need to come up with the microcode for our new conditional jump instructions
+So to think about how that will work, let's look at how the jump instruction works
+You know the execution of every instruction is defined by a micro code
+Which is stored in these eeproms here and eeproms are basically just a big lookup table
+You know we've got four bits from the instruction register
+Which are these four bits here going into four address lines of the eeproms?
+And then we've got three bits from the step two these three bits here
+And they're going into three more address lines of the eeproms and then based on whatever the instruction and step bits are
+Then the e problems are going to output a particular control word which you can see over here
+So let's say there's a jump 0 instruction sitting in memory so first it gets loaded into the instruction register
+And that's because the step counter right now
+starts out at 0 and E problems our program that fir for any possible instruction if
+The if the step is at 0 then output this control word and this control word says counter out
+Memory address register in so you can see that here counter out memory address register in and that's because we're on step 0
+So the contents of the program counter get put into the memory address register when the clock ticks
+So now we're at step one and these LEDs are turned around backwards
+This is really step one and for an input of step one with anything in the instruction register
+So step one anything in the instruction register the eproms are going to output this control word here
+And that's what we see down here, and this says ram out instruction register in and counter enable which increments the program counter
+So with the next clock tick the contents of RAM gets moved into the instruction register, and we move on to step two
+So it's step two now
+We've got 0 1 1 0 in the top half of the instruction register
+and 0 1 0 is our step and so anytime that we've got 0 1 1 0 as our instruction and
+0 1 0 is our step like we do then the microcode eeproms are going to output this control word here and
+This control word says take the bottom half of the instruction register and put that into the program counter
+In other words the next instruction executed will be at address zero here because that's what's in the bottom half the instruction register
+So if we execute that you can see this zero goes into the program counter
+Now that's an unconditional jump. You know it's always going to jump no matter
+What's going on with the flags register over here?
+But how can we build a conditional jump right now the the control word is is the result of a lookup table?
+You know that depends on the instruction that we're executing and what step of that instruction
+We're on but since it's the control word here that
+That controls whether the program counter is is being updated or not?
+You know we need this control word to also depend
+Not only on just the instruction in the step, but also on the condition
+You know whether a particular flag is set in the flags register
+So what we need to do is change the way that our micro code works
+So instead of being a lookup table like it is now
+It takes a four bit instruction and a three bit step and outputs a control word
+we need it to be a lookup table that takes a four bit instruction a three bit step and the two bit flag register and
+outputs a control word
+Luckily the eeproms we're using have 11 address lines, and we're only using 8 of them
+You know we've got four for the instruction here
+We've got three for the step
+And then this eighth one we're just tying low on this one and high on this one so we could program both
+He problems the same
+But we've got three more address lines that we're not using at all eight nine and ten here and and they're just tied low
+So instead we could hook up
+You know address eight and nine to the carry flag and the zero flag from our Flags register
+And that way the behavior of an instruction could be different depending on whether one of the flags is set you know in most cases
+It'll be the same
+So we'll just have to program the same thing regardless of what the flags are set to but for our new conditional jump instructions
+We'll be able to do something different
+So for jump carry when the carry flag is set we can have it actually changed the program counter
+But for jump carry when the carry flag is not set we can have it do nothing
+So let's hook that up address eight and nine are these two pins here and these two pins here
+And they're currently tied to ground so I'll remove that to start with
+next I'll tie address eight on the Left EEPROM to address eight on the right and address nine on the Left address nine on the
+right since we want to consider the flags register the same for both halves of the control word and
+Then I'll tuck that carry flag over here around to address eight of the eeproms
+And same thing with the zero flag I'll hook that up to address nine of the eproms
+All right so now
+We've got the flags register hooked up as another input to our control word lookup table so now
+Our control word is going to depend on the instruction. We're on what step of that instruction
+We're on and what the flags register might happen to be
+Now if we hook this up, and you know as long as the flags register is zero
+Then everything's going to work out just like it did before
+And actually since none of our instructions are setting this flags in bit yet
+Because we haven't reprogrammed our micro code at all the flags will actually always be zero
+So right now the computer actually works exactly like it did at the beginning of the video
+except of course
+We've added a bunch of hardware that makes it possible now to create new instructions that will let us do conditional jumps
+So now we've got all the hardware in place. We just have to update our micro code and
+so in the next video
+I'll actually
+Go ahead and reprogram the micro cody problems to make use of the flags register and create those new instructions that will let us do
+Conditional jumps and also write and test some programs that make use of those conditional jumps
+But one last thing that I'll leave you to sort of ponder
+You know I've noticed that a really common feature of any complex system is the presence of feedback loops
+You know whether it's a biological process economies or the climate you know any any truly complex system always seems to involve
+feedback loops
+And so I find it kind of interesting that the hardware that we build in this video essentially creates a feedback loop. You know
+We've got these flags here. Which are now an input to this function that determines the control word
+Which in turn affects how the flags get updated?
+And so there's there's kind of a bit of a feedback loop going on here, and I don't know
+I just think that's interesting that we set out to make this thing turing-complete
+which is you know fundamentally a dramatic increase in the complexity of what it can do and
+It turns out that in order to do that. It looks like we ended up adding a feedback loop
+So I'm not really sure what to make of that, but I thought it was kind of interesting just to notice
+so anyway in the next video
+We'll go ahead and reprogram the eeproms to handle this new Flags register
+and add additional jump instructions and actually demonstrate the the new powers of our computer and
+With that next video I expect I'll be pretty close to done with what I planned for this computer project
+But I'd love to hear your thoughts on future projects or other videos that you'd like to see me
+Do there's a link in the video description to a reddit thread where you can make video suggestions obviously, no promises
+But I'd love to hear what you what you all are interested in seeing
+You

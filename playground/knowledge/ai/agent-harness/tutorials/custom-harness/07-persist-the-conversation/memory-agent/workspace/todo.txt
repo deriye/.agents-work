@@ -1,0 +1,11 @@
+TODO LIST
+=========
+
+[ ] Confirm launch date (target: March)
+[ ] Schedule additional testing before release (per Bob's request)
+[ ] Cut extra ad spend to stay within budget
+[ ] Attend next meeting (Friday 2pm)
+[ ] Update the changelog
+
+---
+Generated from notes.txt

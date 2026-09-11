@@ -1,0 +1,690 @@
+Introduction
+0:00
+so in the last video we used a 555 timer
+0:02
+here to build this little clock circuit
+0:04
+and so we have our pulsing clock output
+0:06
+on pin three of the trip 5 timer and we
+0:09
+can control the speed using this uh
+0:11
+potentiometer and so that's great but
+0:13
+there might be times when we want to
+0:15
+manually control the clock and we want
+0:17
+to be able to just push a button each
+0:18
+time we want the clock to advance one
+0:20
+one or we want the our computer to
+0:22
+advance one clock tick and so you might
+0:25
+think well that's pretty easy we just
+0:26
+hook a button up and so we have you know
+0:29
+this output here uh of the button is is
+0:32
+pulled to ground through this resistor
+0:34
+normally uh but then when we push the
+0:36
+button it connects it to our our 5vt
+0:39
+supply here and so push the button it
+0:42
+comes on and so we can manually pulse
+0:45
+the clock like that you might think well
+0:47
+that that works pretty pretty well and
+0:49
+that's almost true and in fact you might
+0:50
+be able to use this and you might be
+0:52
+fine with it uh depending on the button
+0:54
+that you have uh what happens is inside
+0:56
+that button when you push it there are
+0:58
+two metal contacts that come together to
+1:00
+close the circuit and sometimes what
+1:02
+will happen when you push the button is
+1:04
+those contacts will bounce uh and so
+1:07
+it'll it'll close and then bounce and
+1:09
+then close again or maybe it'll bounce a
+1:12
+couple times and so what happens is when
+1:14
+you push that button you actually get a
+1:16
+couple quick pulses and if that's hooked
+1:19
+up to you know the clock of our computer
+1:21
+and we push that button we could
+1:23
+actually trigger a couple clock pulses
+1:26
+uh when we only meant to trigger one and
+1:28
+that could be really frustrating if
+1:29
+you've got you know some issue that
+1:31
+you're trying to debug in the computer
+1:32
+and you've you've spent a couple minutes
+1:34
+getting it all set up just perfectly and
+1:36
+you're you're right at that point where
+1:38
+the next clock pulse is where you're
+1:39
+going to figure out what's wrong with it
+1:41
+and you push this button to get a clock
+1:42
+pulse and you get three clock pulses and
+1:44
+it goes right past the problem you're
+1:45
+trying to find that that could be really
+1:46
+frustrating so what we want to do is we
+1:48
+want to figure out a way to get rid of
+1:50
+that the the that or you know avoid that
+1:54
+bouncing and uh you guessed it we can do
+1:57
+that with our friend the triple five
+1:59
+timer but first I hooked up the
+The oscilloscope
+2:01
+osilloscope just to take a look at the
+2:03
+the switch here and so when we push the
+2:04
+switch you can see this is what we'd
+2:06
+expect right it it transitions from off
+2:09
+to on uh but if we try this a few times
+2:11
+we might see some different
+2:20
+stuff oh there's something yeah look at
+2:23
+that so that that definitely bounced uh
+2:25
+right there uh so that's that's not good
+2:27
+you don't you don't want that uh because
+2:30
+that would you know that would look like
+2:31
+one two three potentially clock pulses
+2:34
+when you only push the button once so
+2:36
+you definitely want to get rid of that
+Debouncing circuit
+2:38
+and so this now is a triple 5 circuit
+2:40
+that is going to help us with this uh
+2:42
+with this switch bouncing problem and so
+2:45
+well before we get into it let's just
+2:47
+try it out let's push the button see
+2:48
+what happens push the button the light
+2:51
+comes on and then a little while later
+2:53
+the light turns off um and importantly
+2:56
+what happens if we push the button
+2:57
+multiple times the light only comes on
+2:59
+once
+3:00
+and that's what we want and this is
+3:02
+called a debouncing circuit and there's
+3:03
+you know there's other ways to build
+3:04
+debouncing circuits but uh you know I'm
+3:06
+using the triple 5 timer just because I
+3:08
+think it's a fun chip to play with and
+3:10
+so the timer here that's controlling how
+3:11
+long this uh stays on when you push the
+3:13
+button is controlled by the the resistor
+3:16
+and capacitor over here and so you know
+3:18
+you remember before we had two resistors
+3:21
+in a capacitor that were controlling the
+3:22
+the pulsing uh here we just have one
+3:25
+resistor in a capacitor and we'll go
+3:26
+into more about how it works but
+3:27
+basically the time that the LED stays on
+3:30
+is just you know you pretty much
+3:31
+multiply the value of the resistor times
+3:33
+the value of the capacitor and so this
+3:35
+is a a 1 Mega Ohm resistor and this is a
+3:39
+well it's a 2 microfarad capacitor it
+3:41
+says one MFD on it but uh I don't
+3:44
+apparently these are two
+3:45
+microfarad uh but anyway the nice thing
+3:48
+about about this is 1 Mega ohm is uh 10
+3:52
+the 6th and microfarads are 10 Theus 6
+3:56
+so the math works out really easily here
+3:58
+so that a a two microfarad Capac Itor
+4:00
+when you multiply together you just get
+4:02
+two and so that gives us a 2C delay and
+4:05
+sure enough we push the button the LED
+4:08
+stays on for 2 seconds which I guess is
+4:10
+further confirmation that this one MFD
+4:12
+capacitor is really two microfarads uh
+4:15
+anyway uh so you know 2 seconds is kind
+4:18
+of long for what we want so what we
+4:20
+could do is we could put in a a 0.1
+4:22
+microfarad
+4:23
+capacitor instead of this uh two
+4:26
+microfarad capacitor and if we stick
+4:29
+that 0.1 microfarad capacitor in there
+4:32
+that's going to give us 0.1 seconds
+4:35
+because we're multiplying it by this one
+4:36
+megga ohm resistor so now it stays on
+4:39
+for 0.1 seconds no matter how quickly I
+4:42
+push it it's kind of hard to tell uh but
+4:45
+that's what we want we want it to pretty
+4:46
+much follow what we're doing when we
+4:48
+push the button uh but we critically are
+4:50
+getting rid of those bounces and so as
+4:52
+long as any bounces that happen within
+4:54
+the first uh you know 100 milliseconds
+4:57
+or 0.1 seconds uh we we've gotten rid of
+5:01
+and that's what we want and so I
+Circuit diagram
+5:03
+understand how this works let's look
+5:05
+again at our circuit diagram and I've
+5:07
+got the the triple 5 timer here the the
+5:09
+guts of it exposed here but the the
+5:12
+green bits out here are are are circuit
+5:15
+and of course we have an LED hooked here
+5:17
+the output I I didn't draw but um and of
+5:20
+course we're just looking at this this
+5:22
+lower half here is you know this is what
+5:24
+we built in the last video and so we've
+5:26
+got our resistor here which is our one 1
+5:29
+megaohm resistor and we have our
+5:32
+capacitor which is a
+5:34
+0.1 microfarad capacitor and then you
+5:38
+know over here I've got the the the
+5:39
+button hooked up and if you look at how
+5:41
+this is hooked up uh the the button is
+5:43
+connected between ground and pin two and
+5:47
+then it's also from pin
+5:49
+two you can see we've got a a
+5:53
+1K uh pull-up resistor basically what
+5:56
+that does is it ensures that pin two is
+5:58
+normally connected to to 5 volts but
+6:00
+then when we push the button it connects
+6:02
+it to ground and then uh pin 2 goes to 0
+6:05
+volts so just like before we've got this
+6:07
+voltage divider uh Network going on
+6:10
+inside the the triple 5 timer and so
+6:12
+we've got 5 volts up here and then we've
+6:15
+got uh 3.3 volts here at this first
+6:19
+point and then we've got 1.
+6:22
+667 uh volts here at the second point
+6:24
+then of course ground is at 0 volts and
+6:27
+so that's just a voltage divider resist
+6:29
+voltage divider we' got 1/3 of our
+6:31
+voltage 2/3 of our voltage and then up
+6:33
+here is our our full voltage and so so
+6:36
+we can see right now you know our output
+6:38
+is off you know the LED is off so if our
+6:40
+output is off then you know that must
+6:42
+mean you know that the Q output of this
+6:45
+Sr latch is off and so the inverted Q
+6:48
+output must be on and so if that's on
+6:51
+then that's going to be uh you know
+6:53
+putting current into the base of this
+6:55
+transistor and so this transistor will
+6:57
+switch on and will be discharged
+6:59
+charging or we be you know we'll be
+7:02
+pulling current through this transistor
+7:03
+and so you know in this in this state
+7:06
+right now current is Flowing you know
+7:07
+from our voltage source through the
+7:09
+transistor to ground uh and if this
+7:12
+capacitor had any charge on it that
+7:14
+would also be you know uh discharging uh
+7:17
+to ground and so this capacitor doesn't
+7:19
+have any charge on it and so our
+7:20
+threshold is at zero and of course zero
+7:23
+is not above uh 3.3 and so this is going
+7:27
+to be off um and then this down here is
+7:31
+5 volts right so it's you know trigger
+7:33
+pin two is 5 volts and 5 volts is not
+7:37
+not below 1.6 Vol so this is also off so
+7:40
+both of our s and our R inputs into our
+7:42
+Sr latch are off right now and so
+7:44
+somehow this latch is just latched into
+7:46
+the state where it's
+7:48
+off but what happens when we push the
+7:50
+button when we push the button we now
+7:53
+pull this trigger low we pull this to 0
+7:55
+volts and so 0 volts is you know is
+7:58
+definitely below ow 1.6 Vols and so this
+8:02
+comparator here turns on and that
+8:04
+triggers the Set uh of our Sr latch and
+8:07
+so that turns the output on and so sure
+8:09
+enough you know we push the button the
+8:11
+output comes on so no surprise there but
+8:15
+the other thing that happens is when
+8:16
+that output comes on uh this turns off
+8:20
+and so we're no longer you know pulling
+8:23
+current through this transistor here and
+8:25
+we're no longer discharging this
+8:26
+capacitor so instead we're charging the
+8:28
+capacitor and we're charging the
+8:30
+capacitor through this resistor and so
+8:33
+this capacitor is going to charge uh
+8:35
+it's going to start to charge and
+8:37
+eventually you know it's going to get
+8:39
+above 3.3 volts and so when the
+8:42
+capacitor charges to above 3.3 volts now
+8:46
+the uh the reset is going to be
+8:48
+triggered this this comparator is going
+8:50
+to turn on it's going to trigger the
+8:51
+reset and that's going to turn off our
+8:53
+output and it's going to turn on our our
+8:57
+inverted output here our in you know
+8:59
+inverse q and that's going to you know
+9:01
+push us back into this state where we're
+9:03
+now discharging the capacitor and and
+9:06
+now there's no there's no resistor
+9:07
+between this capacitor remember in the
+9:09
+circuit before we had another resistor
+9:10
+in here but there's no resistor here so
+9:11
+this capacitor is going to discharge you
+9:13
+know immediately and so it's just going
+9:15
+to you know drop right back down to Zer
+9:18
+volts
+9:20
+um which of course is going to
+9:22
+immediately turn off this uh this
+9:25
+comparator right because 0 volts is is
+9:27
+certainly not going to be above 3.3 and
+9:29
+so this comparator is going to turn off
+9:31
+and we're not going to be triggering
+9:32
+this reset anymore but if we're not
+9:34
+pushing the button you know we're not
+9:35
+triggering our set anymore either and so
+9:37
+the latch is just going to stay in its
+9:39
+latch
+9:40
+State and our and our output will be off
+9:43
+you know
+9:44
+so if we're looking at what our what our
+9:46
+output did as soon as we you know as
+9:50
+soon as we as we hit this trigger our
+9:52
+output comes on right because we set the
+9:55
+the latch and then it stays on while the
+9:58
+capacitor charged up but then once the
+10:00
+capacitor gets to the 3.3 volts boom our
+10:04
+output goes off and it just stays off
+10:07
+and it stays off until we until we hit
+10:10
+that trigger again we until we push the
+10:12
+button again and so you might hear this
+10:14
+referred to as a monostable mode of the
+10:17
+triple 5 timer uh because it's called
+10:20
+monostable because there's one state
+10:21
+where it's stable and then if you push
+10:23
+this button it goes into this other
+10:25
+state where it's not stable where it's
+10:26
+going to you know eventually this
+10:27
+capacitor will charge and then it'll
+10:29
+drop out of that State uh whereas the
+10:32
+you know what we did in the last video
+10:34
+with this this is called an aable
+10:36
+multivibrator or aable mode for the
+10:38
+Triple 5 because it doesn't have a
+10:39
+stable State it's you know constantly
+10:41
+altering between two states on and off
+10:44
+so you might hear those terms monostable
+10:47
+and aable so to take a look at that in
+In action
+10:49
+action I've I've hooked it up to the
+10:50
+scope here and I've also gone ahead and
+10:52
+put the uh that 2 microfarad capacitor
+10:55
+in there again just so we get that nice
+10:56
+slow 2cond uh uh pulse there so if we uh
+11:00
+fire up the oscilloscope here push the
+11:02
+button you can see the output goes
+11:04
+immediately high and then you can watch
+11:05
+the capacitor charge and then boom as
+11:08
+soon as it hits that 3.3 volts so let's
+11:10
+see 1 two
+11:12
+3.3 yeah 3.3 volts capacitor gets there
+11:15
+and boom it just that discharge pin
+11:17
+flips and the capacitor just instantly
+11:19
+discharges and then of course our output
+11:21
+turns off then and so you can see any
+11:23
+bouncing that the switch is doing in
+11:25
+here doesn't matter our output's already
+11:27
+high we've got that latch that's uh that
+11:29
+that's latched it high and then you know
+11:31
+as as long as this capacitor will just
+11:33
+charge away and then boom turns off so
+Finishing touches
+11:36
+I've got that 0.1 microfarad capacitor
+11:38
+back in there with our one Meg resistor
+11:40
+I think that's what I'm going to go with
+11:42
+and uh you just like before we've got
+11:44
+that uh that control voltage pin which
+11:46
+is a pin five here that we're not using
+11:49
+and that's just kind of tied into here
+11:51
+and uh again the data sheet recommends
+11:53
+putting a 01 microfarad capacitor
+11:56
+between that and ground so I'll go ahead
+11:58
+and add that in there and that's just
+12:00
+for that noise reduction that we we saw
+12:01
+in the last video so good practice put
+12:04
+it there and then the other good
+12:06
+practice is pin four also not using that
+12:08
+that's a reset pin that kind of ties
+12:10
+right into the reset of the SR latch and
+12:12
+it's an inverted uh reset so uh normally
+12:15
+should be uh at 5 volts and then
+12:17
+bringing it to Z volts forces this to
+12:19
+reset regardless of what's going on over
+12:20
+here just kind of override things um so
+12:23
+we'll we'll tie that to five volts there
+12:26
+just to prevent that from accidentally
+12:29
+tripping or anything like that and I
+12:31
+think that'll that'll do it so now we've
+12:32
+got our uh our timer here so we've got
+12:35
+that and we can adjust the speed so we
+12:37
+saw that in the last video and go really
+12:38
+fast or really slow and if we don't want
+12:41
+to use that we've got a manual clock
+12:43
+pulse here so now we just need to come
+12:44
+up with some way to switch between the
+12:46
+two of those and we'll we'll look at
+12:48
+that in the next video

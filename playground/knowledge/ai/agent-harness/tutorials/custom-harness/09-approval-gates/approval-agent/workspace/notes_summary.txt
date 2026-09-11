@@ -1,0 +1,12 @@
+SUMMARY OF MEETING NOTES
+
+Meeting held Monday. Key points:
+
+- Launch date discussed; tentatively targeting March.
+- Bob requests additional testing before release.
+- Budget is tight; extra advertising spend has been cut.
+
+Action items:
+- Update the changelog.
+
+Next meeting: Friday at 2:00 PM.

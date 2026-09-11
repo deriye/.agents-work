@@ -1,0 +1,640 @@
+In the last video, we built the hardware for a flags register, which, we can, use to track certain conditions like
+Whether the result of an operation is zero that's what the zero flag is for or whether an operation generated a carry out of this
+Last bit into the carry flag for example if we add two numbers and the result is more than fits and eight bits
+Then we'd want to set the carry flag, we also hooked up a control line to control exactly, when we load a, new?
+Value into our flags register
+And that says flags in signal down here
+Which is part of our control word we also hooked up the the output or really the current state of the flags register we hook?
+That around into two additional address lines of our microcode eproms that, way?
+What's going on in the flags register can influence the control signals that are coming out of the eproms
+So, we can create instructions that work differently depending on what's going on with our flags
+So let's actually create, some instructions that use the flags register
+now this is the micro code, that's currently
+programmed in the eeproms
+and
+Remember that you problems are really just a big lookup table you've got some address lines going in and depending on whatever those address lines
+are set to you've got
+Some particular output that comes out so for example if we look at our add command for this particular step we're
+saying if the instruction is zero zero one zero and
+Step is zero one zero then this is the control word we get and you can see these three?
+address lines here are the step they're coming down from the step counter over here and
+Then these next four address lines are the instruction and you can
+See that coming from the instruction register and so if all of those are set, like this then
+We want this control work of course this control word is 16 bits so we've got two eproms?
+And i'm using the 8th, address line to tell one eeprom you give
+Me these 8 bits and tell the other eeprom give, me these 8 bits
+Well used to be 7 bits before, we added the flags register and you can see that 8th address
+Line here it's just hardwired low
+On this eeprom and high on this other eeprom, and that just lets us program both eeproms identically so now
+We're adding, two more address lines for our flags, and that's going to change what our lookup table needs to look like
+So here's a copy, of that lookup table, where i've added the carry flag and the zero flag now
+Because our control word is now going to depend on the instruction the step and the flags
+Now most cases you don't see you see the flags don't matter and we want to?
+Do the same thing regardless of whether the flags are set or not
+In fact all of the instructions have got so far like that because, we haven't had?
+These flags until, now but i've added two new instructions jump on carry and jump on 0 here they
+Do, make use of the flags so jump on carry for step 2 0 1 0 if the carry
+Flag is not set then, none of the control signals are set yeah, we don't
+Want to do anything but for jump on carry
+A step 2 if the carry flag is set then this is the control word
+we're doing instruction register out and
+Jump and this is the same thing as just a normal jump instruction and of course that
+Makes sense at the jump on carry instruction would do what a normal jump instruction does only, when the carry
+Flag, is set then for steps 3 & 4 regardless of what the flags are set to we do nothing
+And that's just because?
+We don't need, to do anything else for or jump in any case jump on 0 works the same way except in this case
+Whether, we do the jump or not depends on the zero flag rather than the carry
+Flag it's one other change i made here which is i added this last column here for the new
+Flags in signal ya before this this extra bit wasn't used and it was always just zero but now
+I, want to have it set during the last, step of the add and subtract
+Instructions because it's at. This point when we've just done our addition or subtraction
+And we're taking the result, and putting it back in the a register, we also?
+Want to update the flags register to match whether that result was 0 or had a
+Carry, now in all these situations, where, we don't care what the carry
+Flag or 0 flag are you know all of these x's here it means
+We need, to have the same thing programmed in the eproms in each of the different possible combinations
+So that, means we're. Going to be using a lot more of the eeprom memory in other words we look at. How
+This information, is mapped to memory addresses in the eproms it looks something like, this right now so a 0 through a to
+Tell us which step of the instruction
+Cycle we're on the next four bits a3 a4 a5 and a6
+Are the opcode of whatever instruction we're, executing that comes right from the instruction register
+And then a7 is this address line i'm calling byte select
+Which tells us which eight bits of the control word we're getting out if it's a 0 then we're
+Getting the first 8 bits
+And if it's a 1 then we're getting the last 8 bits of the control word that's, why
+To get 16 bits at the same time we've got two of these eeproms and
+The programmed identically and then a7 is just 0 here and it's 1 here they're just hardwired
+so that's what's programmed there now we've got all the opcodes 0 through 15
+and then for each of those opcodes we've got the steps 0 through 7
+And that's for the first half of the control word and then we just repeat that again
+For the second half of the control word and so that goes from address 0 all zeroes here up to address
+255 we've got 8 ones here but now, we also need to handle all the combinations of this carry flag and the zero flag
+so that actually, means, we need 4 copies of this the one we've got
+One with the carry flag set
+One with the zero flag set and then one with, both flag set
+And for the most part these 4 copies will be pretty much identical because for the most part the control word
+It really doesn't depend on the flags
+But there are these two places where we do want it to depend on the flags
+Here and here and this will let us do that now. You might say it's you know
+Maybe inefficient to take up four times as much memory and the eprom is just to handle these these two
+little one-off cases and fair enough you know if you
+Want to minimize the size of the eeproms that you need then you know this might not be the solution for you
+There's probably other solutions that you could come up with that would be better to achieve that goal you know
+But that's the deal with engineering
+You're, always making trade-offs you know it's virtually impossible to come up with a perfect
+Design that's going to optimize every variable
+Especially when you consider that the cost of the time that you spend cooking up that perfect solution is also something that you probably want
+to, minimize
+But but
+My, goal, for this is really just to be flexible enough to tinker with and easy enough to understand and hopefully i've done, ok
+on that
+Ok, so now let's take a look at actually programming as eproms
+So i'm going to use this arduino based eeprom programmer that i came up with in a previous video so
+If you're, unfamiliar with, what this is or how it works check out that other video
+Here's the code from that from before and i'll start, by, making a
+Copy, so we can hang on to the previous version
+Now that way it'll be easier for to find the code for anyone watching those previous videos
+And the first thing i can do is pretty straightforward you know remember
+We added another control signal to the control word for loading the flags register so i can
+Define that flags in signal as using that final bit of the control word
+And then we're, using that flags in signal here on step 2 of the add and subtract instructions and
+So, we can just add fi to that step of add and subtract
+And now fix up all the spacing i'm sure it's not gonna work right if everything doesn't line up perfectly
+There we go now could this nice representation of our micro code here
+But like i was talking about before we basically need four copies of this you know slightly tweaked
+now i could just copy
+And paste in this array just these 16 lines here you know 4 times and just end up with a
+Big long list of 64 lines that you know repeats, mostly the same thing but you know
+I, worry that that's just kind of asking for trouble if you know
+If the four copies get out of sync in some subtle way, by by accident you know
+There'll be a real pain to chase down, what's going wrong
+So instead what i'm going to do is use what i've got is kind of a template
+And have the program make four copies of it now
+That way, we can, explicitly, make just a few tweaks that
+We want to each of the four copies and know that the rest will be the same
+so, what i'll do is define an array of arrays to hold all four copies and
+Then, what i'll, do, is i'll rename this data, array here to make it clear that it's the template
+And then i'll define a function to initialize that microcode array
+And basically what i want to do is just copy that template into the micro code
+Array, four times and so this
+is taking this template that i have here this micro code template and just making four copies of it in
+These four spots in this micro code array
+And the first copy is for when the zero flag and the carry, flag are both cleared next is for when the carry
+Flag, is set
+Then for when the zero flag, is set and finally for when both the zero flag and the carry, flag are said
+I'm also going to change the way that this array
+Is defined to be a little bit more structured
+So rather than being just kind of a flat array of i think is 128 control words
+Is what this works out to be rather than just being kind of flat array of 28
+Control words what i want to do is change that to be an array of 16 instructions up to 16
+instructions and then each of those instructions will be an array of 8
+Control words so it's going to look
+Pretty much the same but what i'm going to do is each of these instructions will be an array of eight control words and then
+The, overall template will be 16 of those instructions so i'll go ahead and just add all these extra braces here and you'll see
+Why i'm doing this here in a minute basically is just going to make it easier to get at
+A particular value if we know the instruction in the step and then another sort of cosmetic thing i'll do is just
+Define some constants here to make it more clear what the different combinations flags are so this is just the different values of the flags
+Then i can, come down here and replace these sort of zero one two three with
+Those constants to make this a little bit more clear and i think that makes it just a little more explicit what's going on with
+The microcode array you know i know i've already got comments here but
+I like making the code itself as self-explanatory as possible since i found that comments
+Don't always tend to stay up to date and you know
+There's nothing that it forces that the comments are correct so now of course we've got to go and call this
+Initialization function, so i'll go ahead and do that down here at our sort of entry point here and setup so just when
+We start off?
+We'll call that function, and then for the actual programming here
+Where we're programming the eeprom you know since we've changed around the data structure so much i think it's probably
+Gonna, be easiest to replace most of this code that
+That's writing to the eproms
+So what i'm gonna do is rather than splitting this up into the two loops here the four the eight high order bits and then
+A low order bits
+I'm just going to collapse this into one loop that goes through the whole address range so i'll get rid of one of these loops
+and
+So the whole process from when, we start programming that you prom to when we're?
+done
+Will just be this one loop and
+if we're, going, through the
+Whole address range if we go and look at how our eeprom memory is laid out and we want to go from?
+Where all the bits are zero so from address zero all the way through all of these up until, we get to?
+Where all of the bits are ones and so we've got ten bits you have ten bits of one's is a
+Thousand, twenty-three, we can, also check that, by doing two to the power of ten because we've got ten bits
+And that's a thousand twenty-four so there's a thousand 24 combinations that you can get with ten bits
+So, we'll loop our address from address 0 up into
+1024 okay so when we get to that address when, we write to the eeprom at?
+That address, what is it that, we want to write?
+Well we want to write that microcode value
+That we generated here when?
+We initialize things and so that microcode go back up here, where
+We define that it's an array with four values in it so the first index into that array is going to be the flags
+Then the next index into it is going to be, well into the into the template that, we copied in and so actually
+Maybe what will make sense, is since this template is an array of 16 instructions, each with eight steps i can
+Make the microcode an array of four flags values
+Each with 16 instructions each of those instructions with 8 steps so we've got flags
+Instruction and then step
+So when we're writing that out to the eeprom we're writing to each address in turn
+From that our microcode the correct value for a particular flags value a particular instruction and then a particular step
+But how, do we figure out, what this flags value, this instruction value or this step value ought to be well
+We should be able to figure that out from the address or, well we're in this loop
+That's going through all of our addresses from 0 all the way up to 10 23
+So we're going through every possible value of address and our address is broken up you know
+By bits so if we look at just three bits of that address value, we can
+Figure out what step we're on if we look at just these four bits, we can, figure out
+What opcode we're on if we look at just these two bits, we can figure out, what flags were on so what
+We want to do is when, we get into this loop, we want to look at this address and from that address
+We ought to be able to compute what flags, value were at what instruction we're at
+And what step we're at? So the flags that's going to be the first two bits of the address
+So we're looping through this, whole thing and then
+we're going to start at 0 1 2 3 4 5 as
+We loop through our addresses and we just want to look at the first two bits
+So to look at the first 2 bits, what, we can, do is we can do a shift write operation so
+We have 10 bits here if we shift all of this to the right
+By 8 bits then the only 2 bits that we'll have left are the first 2 bits over here they'll
+Be shifted all the way to the right
+And everything else will be 0 and so those two bits that we've shifted will be our flag bits so we can take
+to, sort of figure out our flags, we can, take address and
+Shift right 8 bits so
+That's flags, and so that'll get the right flags value for this particular address
+How, about instruction, well instruction is our opcode here and so opcode is these 4 bits and?
+We could, do the same thing, we could shift right, well in this case three spaces
+And that would that would get our opcode over here to the right and then the value of the of those
+Four bits then, would be the opcode but, we might have, some other stuff over here, we might have our our byte select
+We might have our flags what, we can, do is we can, use a bit mask to just pick out
+those four bits before
+We shift them over so here's what i'm talking about so if we take our address and we and it with a binary value of?
+0 0 0 1 1 1 1 0 0 0
+Basically what we're?
+Saying is if there's any bits in our address
+In any of these places that are zeros since we're anding it with a 0 we're going to get a 0
+no
+matter what if there's any bits in this address that are either a 0 or a 1
+We're, gonna get that same 0 or 1 when, we end it with a
+1 and so what does it going to effectively do is if you take an address
+Any, value anywhere in here and you and it with that with that binary value
+What it's going to do is it's going to zero out?
+Everything, but the opcode so once we've zeroed that out what
+we can
+Do is we can shift that to the right and then
+We'll be left with just the opcode as a number from 0 to 15 so if we take this address anded by this bit mask
+We can, shift right by
+3 and
+That will give us our instruction as a number from 0 to 15 as to which which instruction associated with
+That particular address and then, we can, do the same thing with
+Step so step is going to be our address and in this case step is already shifted to the right i mean it's it's just
+these first
+3 bits over here on the right, so, we don't need to shift it anywhere but
+We do need to kind of zero out the rest of the bits and so we can
+Do the same thing with an and so we can, end this. By all zeros and then three ones and those three ones will
+preserve the
+Last 3 bits of the address here, and give us the step and it'll zero out the rest of that even if you know
+We get it get into here where not all of these bits are
+Zeros it'll still 0 the mount and we'll just have our step from 0 to 7
+So i can actually clean this up a little bit make things kind of line up
+And the other thing i could do is actually with the flags we're
+Shifting this all the way to the right but for consistency, what i can do is i can, also
+say
+We're going to zero out all but those two bits and that again it just sort of makes the code more readable
+So if we say address and?
+Those first two bits and then the rest are 0 and we shift right to the 8th that doesn't really do anything because when
+We shift right to the 8th, we lose all these other bits anyway?
+But it does make it more consistent here and you can see
+Ok, the flags are the first two bits the instruction are these four bits
+And the step are these last 3 bits and that's you know consistent with with, what, we see here but of course we've forgotten
+One bit there which is our byte select?
+And so that suggests that maybe there's something missing in our code here too and in fact is because when
+We write our micro code value here remember this micro code value is a
+16-bit value and the eeprom is only going to look at the least significant 8 bits of that and right now
+Because we're ignoring, this, byte select, we're gonna
+Be writing only these least significant 8 bits to every value, whether the byte select, is set or not?
+So to fix that first what, we want to do is figure out you know if we're on an address, where the bytes like
+This, is set so so we can, do byte select. Equals and it's
+Gonna, be the same pattern here and of course will be this bit that
+We don't match yet and so now you can
+See we're matching all the bits the first two bits are the flags the next bit is the byte select
+The next four bits are the instruction the last three bits or the step and here we want to shift right as
+Well the byte select
+is here we want to shift that all the way to right so that's going to be seven places to the right and
+So now that, we have our byte select, what, we can, do is depending on whether the byte select
+Is set or not so if it's set, what does that mean so byte select
+You can, see that set here on the chip on the right and so when that's set
+We want to get these bits on the right here, which are the least significant bits so if byte select
+Is set then what, we want to do?
+Is write out the last eight bits of our 16-bit word here so so if we actually just
+Do what we're doing here we're writing the value that
+We get from the microcode?
+This right eeep rom is only going to take eight bits anyway so it's just gonna it's gonna chop
+Off the first eight bits, like this and we're gonna
+Be left with with what, we want so what, we want to do is when byte select? Is not set so the other case here
+Else, we want to do?
+The same thing, we want to write to the eeprom but, we don't, want to write these eight bits
+We want to write the top eight bits and so what, we need to do is we need to shift them over?
+Eight places so, we shift right eight
+And that'll shift all 16 of these bits over to the right here and we'll lose these these
+Lower eight and we'll just be left with the high eight bits here, and that ought to give us what
+we want and so i think this ought a program all thousand 24 bytes of our eeprom correctly, and
+Then, we print done and then, we print the contents of the eeprom and actually i think here, when?
+We print the contents we're probably, not printing enough to see everything that
+We programmed yeah so if i find our print contents here to see we're going, from 0 to 255 but, maybe this should be 1024
+But actually, what i'll do, is i'll just give it a length and then we can
+Pass that in and in fact we can give it a start point too
+So this print contents will now take a start in a length, and print however much, we want
+So here i'll just say start at address 0 you can't give us a thousand 24 bytes so that should print the whole thing so
+Let me try compiling this and see
+What mistakes i made okay, well that's supposed to be flags
+You, probably, were all screaming at me when you saw me type that
+And we're missing a semicolon
+And it's compiled but i'm getting this low. Memory available and?
+That's because the the arduino, nano has only got two k of memory, which is not a lot?
+And we're using a lot, with all of this data that we're we're now
+We've gone out got in here for not only our template but
+Also all of the copies for the different flags values and so this is just warning us that we're using a lot of that memory
+Now the arduino has got some different types of memory so
+The atmega 328p is the arduino chip that we're using and it's got two k of sram but it's got 32 k of
+Flash, and so if you've got data that you don't need, to write to you, don't need
+To, modify it's just gonna stay the same throughout the entire program you can
+Actually put that in this flash memory to free up some of this sram and
+So in our case we've got the template here and we never modify the template, we modify this micro code right because
+We copy things from the template into it and when we add some exceptions here we're
+Gonna be changing some things in the you know in this micro code here but we're never changing the template itself
+So, what we can, do is we can, actually put the template in flash
+Which is which is called program memory rather than rather than loading it into the sram when the program runs and that'll save
+Well sixteen times eight, and these are 16-bit values, so that'll be 256. Bytes, which it has a decent chunk of this
+1598 that we're using so to put this into that flash, memory, that program memory you basically just preface this with
+Const program for a program memory, and that'll store this in that flash rather than loading that into the limited, sram that
+we have of 2048, bytes although
+There's one big gotcha with this, which is if we're copying from program memory into s which we're doing here with, this mem copy
+you've got to use a special version of em copy so you got to do em copy underscore capital p -
+To, use the arduino version of mem copy that will copy from program memory so if we don't, do that we're?
+Gonna find these mem copies, don't actually work so now let's verify this
+And now it's compiled and you see we're using, less memory
+And we're not getting that warning anymore and of course i do need to add you know
+The, jump, carry, and the jump zero instructions that's the whole sort of whole point of what we're doing here but
+Before i do that what i'll do is just test out what i've got so far before
+We add anything more complex to it just to make sure i haven't broken anything yet
+So i'll pull these eeproms out so we can, reprogram them
+And then i want to put each one into the eeprom programmer here
+And hook the programmer up to my computer alright, so what i'll do is open up the serial monitor
+Yeah, and it looks like it's already programming because i guess it had some old code in there from before
+but anyway, we'll
+Give this a, go and try uploading our code to the arduino see there it's writing
+That's good and there it goes so now it's programming and it looks like that
+Got everything in there this is sort of weird that this last row is all fs oh?
+It looks like actually or maybe we're just reading too many because
+4 0 0 would be 1024 and so this, would be 1025 1026 or reading past what
+We want to use let's just see if we haven't off by one error somewhere, oh?
+Yeah, here we go so we're saying, base less than or equal to length i think we just want to say
+Base less than length because we're passing in 1024 it'll just re-upload and rerun that
+Not that it really matters it's just cosmetic but it's nice to see everything working the way it should
+Ok, and there we go and so this is 10 23 3 ff but that looks good so that's
+One eeprom i'll pull that out and i'll stick in the next eeprom this, is where it's nice that these are
+Both programmed the same you just pop the other one in and program it the exact, same, way
+So i think i'll just reset this and it ought to rerun the programming code
+Yep, and there it goes yeah that should program the second you prom the same and there it goes and now we've got them both
+Programmed so let's test it out, and see if it still works
+Pull that out and then i'll pop both of these back in where they long
+it'll power it up
+reset and
+Everything looks, good it's now just to test things out, what i'll do is put in a simple program that just counts, by tens
+Okay, that's what i've done is just put in a simple program that
+Doesn't add from address 15 i've got a
+10 in address 15 so it adds 10 and then it will output the result and then it will
+Jump, back to zero so that's what we've got programmed in here so let's reset and
+Let her rip
+And there goes it's counting, by, tens so clearly, we have not broken things too badly and the reason i counted
+By, tens is because then, we should see the carry flag when it flips around
+Past 255 so let's wait for that 20 30 40 50 and then the carry flag, is set and it keeps going
+So that's a really, strong indicator that this is working
+Well because if the carry flag is on and the computer continued to execute instructions properly that means
+We must have the same instructions set up in the other parts of the eproms that are addressed, when the carry flag
+Is set so now i'm pretty confident that we've got things working, well at this point
+Now obviously i can, do a lot more testing right now but i am going to
+Push on and add the conditional jump instructions and the way i've set this up hopefully
+Would be fairly straightforward to add those conditional jump instructions because essentially what, they are is they're exceptions to this copy
+Right because what we've done, is we've just taken this template
+And we've copied it four times so we're doing the same thing
+No, matter what the flags are but in these cases, where the flags are different then, we can, do something different
+By just sort of adding, some exceptions here so i'll show
+You, what i mean first what i'm going to do is define some more constants just to kind of make things again
+Just, make the code a little bit more self-documenting
+And the first, constants i'll define are for the jump carry and jump 0 just mapping the memnon
+Ik to the binary value for those instructions and i'll actually spell out the full binary
+Value here just because we've been looking at everything else in binary, ok
+Now we've got those defined and the reason i'm doing that is just kind of make things a little bit more straightforward
+When we define our exceptions so we're gonna add?
+You know a couple op codes here for our jump carry and our jump 0 so jump carry is going to be this 0 1
+1
+1 and jump 0 is going to be this 1 0 0 0
+Opcode and so for jump carry and jump 0 you know
+in the case
+Where the flags are all zeros so here we're at zero then
+Basically all of the steps are zeros so i'm gonna leave it that way in the code here so right now
+These are just all zeros so there's essentially, no ops but, where they're, not going to be zeros is in these cases
+where the appropriate flag is a 1
+And that's where, we have these exceptions and so the way?
+We can, define those exceptions is after we made the copies of our templates here, we can?
+Add these exceptions and so in this case here for example for jump carry, when the carry flag is 1
+Basically what, we want to say?
+Is that for the carry flag is 1 on step 2 right this, is step 2 of jump carry, when the carry
+Flag is 1 then, we want this to be our control word right, we want our?
+Instruction register out and jump so what i can, say here is i can, say after we've made that copy i can
+Say microcode and so this is going to be flags, where the the zero flag is 0 but the carry
+Flag is 1 so in the case
+Where the carry flag is 1 for that instruction so the instruction in this case is going to be jump carry whoops
+jump, carry
+And step 2 so in that particular case
+Then what i want the control word to look like is i want the control word to say instruction register out and jump
+Which is going?
+to
+Put the contents of the instruction register into the program counter so this is just kind of our exception so it says
+When the carry flag is 1 and we're on a?
+Jump, carry instruction, and we're at step 2 then this is the control word and that just overrides what
+We would have here so what, we would have here is if our instruction is the jump carry instruction that's here
+And we're on step 2 so this is step 0 step 1 so step 2 currently have nothing and so normally
+We would want nothing but in this one case where, we have the carry, flag set then, we actually?
+Want to, do that jump so that that gives gives us a way to sort of you know
+Easily have a sort of an override i guess for for when a particular flag, is set we basically?
+Want to do the same thing for when the zero flag, is set so when the zero flag, is set zero flag
+Is set carry flag is not set on our jump zero instruction on step two, we want to do the same thing
+We want to actually?
+Do the jump so instruction register out and jump and then for this last case here where the zero flag
+Is set and the carry flag, is set we also want to do our jump because you know, we might have a, case
+Where we're doing a
+Jump, carry, and the carry, flag is set but the zero flag, also happens to be set so
+We want to do that and then same thing here the zero flag is set, we don't really care if the carry
+Flag, is said or not this is zero flag, is set carry flag, is set for a
+Jump, carry on step two, we want to do a. Jump and then zero flag, is set carry flag, is set for a
+Jump zero on step two, we want to do a. Jump and so i don't know
+You, may or may not like the way that i've written this, and that's totally fine you can, choose to do it your
+Own way if you, want to but i think this is a fairly compact
+Way of defining kind of a template for the sort of normal case, where
+We don't care, about the flags for each instruction and then if we have an instruction
+Where we do want to do something different for the different flags then, we have kind of a spot here, where we can?
+Fairly, clearly, say what, we want to do so if the flags are in a particular condition
+And we're on a particular command then on a particular step
+We want to do this this different thing that's different from our template so i don't know?
+I think that makes sense to me but, again, with engineering
+There's many, ways you can, do the same thing and it depends what
+You're, going for i think at least the way, my brain
+Works, this this is a pretty clear way of defining these things so okay, let's reprogram our eeprom so?
+Disconnect power here pop these guys out, stick them in the programmer
+Yeah i'll go ahead and upload that
+And it's programming the first eeprom and there it goes and i could pick through this, and try to find the particular
+Exceptions and things that we programmed in there but you know i'm feeling adventurous, so i'm just gonna try it out
+And write a program that uses
+Conditional jumps and see if it works but first, we'll program the second eeprom here
+pop that in yeah and if i just hit the reset that auto reprogram that one
+Okay, there we go so?
+Let's pull, that guy out
+Put it back and what looks like the right spot and so now let's power that up and give it a try
+Stop that reset, okay, that looks good at least as a initial sanity check now i suppose
+We probably ought to write a program that uses a conditional jump
+So i want to write a program that uses one of these conditional jump instructions and so what i'm gonna do
+Is i'm just, going to start with an output
+So output whatever is in the a register and you know when we reset the computer it's just gonna output a zero?
+Then what we'll do is we'll? Add something to that?
+I'll add 15? And i'll just put a 1 in address 15 so an address
+15 here i'll just put a 1 so we'll add 1
+Then, what i'm going to do is?
+Jump, back to zero so i'll say jump
+Back to zero so what this is going to do is just going to keep adding
+One and outputting results are just going to count what i want to do is when it counts and it wraps around
+So if i add this one in it and it we get a. Carry, so i'm gonna do a. Jump carry
+Then i want to jump down past this loop so i wanna count up until
+We wrap around and then i want to do something else so i'm gonna do a. Jump carry
+see this is gonna be
+Addressed to address three so address four i'm gonna. Jump carry to address four
+Otherwise i'm going to jump back because remember that if there isn't a. Carry, from this addition this
+Jump carries is gonna be a
+No op it's not going to do anything so we're gonna loop, and add 15 output the results we're just gonna count up until
+We wrap around when, we wrap around we're gonna come down to instruction 4
+And now what i'm gonna, do, is i'm actually gonna start subtracting, so i'm going to say subtract
+15 so what i basically, want to do is count up and then start counting down, again so i'll subtract
+15 and then output that result
+and lybia address 5
+And then after i output that result basically, wanna, keep looping in this subtract, so i'm gonna i'm gonna loop around adding
+1 and counting up and then if we if we wrap around then
+I, want to jump down to address 4 and i want to create another loop, down here and that's going to loop around
+Subtracting 1, each time
+Until, we get to 0 so now i can do a. Jump 0
+And if we get to 0 then, i will just want to go all the way
+Back up to the top and start over again, so that'll be on searching 6 instructions 7 will
+Be that but if if we haven't gotten to 0 yet then i want to just continue in this loop
+Where i'm subtracting so i want to jump back to
+Address 4 and so you can, see i've created these
+Two loops here right so there's this jump 0
+That loops back to address 0 there's this jump for the loops back to address 4 and so there's these two loops
+Where i'm just outputting and adding, and here i'm outputting
+And then subtracting or subtracting and outputting but then, i have these conditional jumps so if we have a
+Carry, from our addition
+So we've we've maxed out our 8 bits then i jump down here and if we get to 0 and we're subtracting
+Then i jump, back up here so hopefully that
+Makes sense so basically if this program works then what we're gonna do is we're just going to count up from zero to 255 and
+Then count down from 255 back to zero and then count up again
+And just keep doing that and so i think this will be a good way to test the jump carry
+And the jump zero instructions and see if they work and this is also a program that
+We couldn't have done before on the computer without a conditional jump instruction of some sort, okay, so i'll go ahead
+And put this program in you know. Here's my cheat sheet so i can, see what the binary is for each of those commands
+Okay, so i think i've got that all programmed in and just to show that a conditional jumps so we've got a
+jump, carry
+Yet address too so let's go to address to make sure that one's right and jump carry is 0 1 1 1 so that's that
+and
+This is 4 right 1 2 4 so jump carry four in address 2 and then, we have a
+Jump 0 in address 6. Yeah jump 0 is 1 0 0 0 1 0 0 0, and we're jump we're
+Jumping if 0 to address 0 it's confusing. And then there's the 0 there so let's
+Let her rip
+Okay, and there it's counting very slowly i'm gonna speed up the clock here and there it goes counting up and so hopefully when it
+Gets past 255 we'll see the carry flag blank there, and we'll see it start to count down, again
+almost there
+and there we go and now it's counting down
+And so we're now we're in this bottom loop, where it's subtracting outputting and then
+If we get to 0 then it jumps to the top and start adding, again but
+We haven't gotten to 0?
+Yet so it's just going to keep in this loop, down here subtracting until it gets to 0
+And we'll see the zero flag flash and now it's back in this top
+Loop, again so it looks like our jump carry
+Fly or jump carry instruction rather and our job 0 instruction are both working or so it would seem
+So that's exciting what else can, we do with it you know
+How, about multiplication you may recall that i mentioned in my previous video and turn completeness that a conditional jump instruction
+Was the key to being able to compute anything, and that certainly includes multiplication now
+A few people found a clever workaround to doing multiplication without conditional jump using self-modifying code
+I think the first person to post about it was matthew over on patreon where of course all my cleverest viewers hang out
+And he also wrote a really good description of how it works so i would definitely suggest
+Checking that out but if you, do, you'll see that it outputs intermediate values before it gets to the solution and there's also no
+Way for it to do anything but halt once it's found the solution so i don't know
+That it's a pure multiplication function but it is extremely clever given the constraints of not having conditional jump instructions and considering i said this
+Give it a try look at
+These instructions see if you can write a program but i don't think it's possible i think it's pretty cool
+That a few of you proved, me wrong so thanks for teaching me something but anyway now that we've got, some conditional
+Jump instructions, yeah let's look at writing a multiplication routine that doesn't have those side effects
+It's the way, i like to think about writing a more complex program is to start
+By writing pseudocode to come up with a general algorithm and then refine from there into the actual machine language
+So if we want to write a program that multiplies two, numbers let's start with, some variables you know
+Let's say x and y are the numbers that, we want to multiply and then product? Is going to be the result?
+So of course the challenge is our computer doesn't have a multiply instruction
+But it's got an, add instruction and multiplication is really just repeated addition, so here's this algorithm that i came up with
+And the bulk of it is this loop and the goal is to go through this loop x times at the beginning
+We start with product equal to 0. And then each time through the loop, we add y to the product, and
+Also, to make sure we go through the loop, exactly x times, we subtract
+1 from x each time through and then stop the loop once x hits 0
+So in other words if product starts as 0 and we add?
+Y to it x times then product is going to end up equaling x times y and then
+We can just output the the answer down here at the bottom
+So that's all, well and good but how, do we actually do this loop, until x is is 0 thing
+We've got to jump 0 instruction what seems like it might help
+But remember that our conditional jump instructions depend on the flags that are set only after an addition or subtraction
+So, we want to check whether x is 0 we've got to do it after an addition or subtraction from x and right now the
+Only arithmetic we're doing with x is right here this, subtract 1
+Ok, so fair enough what if we do a. Jump at 0 right after the subtract command here you know
+And jump down to the bottom, where we output our product?
+And then we're done with our loop
+Well maybe you see the problem with that you know we'd have an off by one error because
+We want to check if x is 0 before, we tract one not after
+There's a couple things, we could, do one is we could put an, ad zero?
+Right here that wouldn't change x but it would update the flags register then, we could do a
+Jump of zero based on the original value of x before the subtract
+That's one thing, we could do it would take an extra instruction but. You know. That's not the craziest thing in the world
+The intel x86 processors had a compare in instruction that was designed to set the flags before doing a conditional jump
+Basically the the compare instruction does a subtraction and then throws, away the result but it updates the flags so you can
+See here it says
+The comparison is performed by, subtracting the second operand
+From the first operand and setting the status flags in the same manner as a subtract instruction
+So i bet if you've been following
+along
+With this series of videos you could probably figure out how to implement a compare instruction like that on our computer
+So that's an option if if we want to use the jump zero instruction
+But as i mentioned in my video on turing completeness in order for a computer to be turing complete
+We only really need one type of conditional jump instruction so that suggests that it's possible to do this with a
+Jump, carry instruction somehow and it turns out that it works out quite nicely so
+Let's think, about what happens with the carry bit when we subtract, one?
+So, we actually negate the one to get negative one and then really what
+We do is add negative one to two x in this case
+So, what does negative 1 look like in binary
+Well if you're, not sure how, negative one is represented in binary you might, want to check out
+My video on negative numbers in binary
+Because it turns out negative 1 is represented in binary as all ones so in other words it's the same as 255
+So it's actually subtracting one from x is exactly the same as adding
+255 to x and again if that doesn't make sense check out that video on negative numbers in binary
+So what happens to the carry bit when you add 255 to something
+Well a carry bits gonna get said, any time the result of an addition overflows says if it's more than 255
+Well it's gonna happen if you had 255 to anything
+Well anything except 0
+So i think, about that for a second after we subtract
+1 here the carry bit will always be set unless x was zero before the subtract so bingo a. Jump on carry
+After the subtract will know whether x was zero at the beginning of the loop or not so does a show
+That it's possible to write this using either jump zero or? Jump carry
+So now i can rewrite the pseudocode to be a little bit closer to what
+We would program the computer with although i'm still using variables and i'm using labels to sort of suggest
+Where we're
+Jumping to rather than filling in all the addresses just yet but, now we've got the jump carry instruction here like i talked
+About and we can walk through this to see if it makes sense
+So let's say we're multiplying 3 times 5 so x would be 3y lb
+5 and products is gonna start out at 0 so, we start
+By loading x which is 3?
+And a subtract 1 from it and when we do that the carry bit will be set because when, we subtract
+1 from anything but 0 the carry bit will be set so the jump carry it jumps down to continue here then
+We store x which is now to load the product, add 5 to it and then store that?
+Then we go back to the top next time through is the same x is 2 we subtract?
+1 from it the carry bit will be set so we continue down here
+Update x which is now 1?
+And add 5 to product and store that so now product is 10
+Then we go back to the top now x is 1 we subtract
+1
+again
+The carry bit is set so we continue down down here we store x which is now 0?
+Add another 5 to product so now product is 15 and then we go back to the top, this time though
+We subtract 1 from x which was 0 but when, we subtract
+1 from 0 the carry bit isn't set so this time, we drop into this code here and here we load up the product
+Which is 15 output it to the display and then halt, and there we go?
+we multiplied 3 times 5 and of course, we could
+Do other things here other than you know instead of halting so
+unlike that clever workaround that a few of you came up with here, we could theoretically
+jump
+Somewhere else we could execute more code or continue on with our program
+So finally to take this to the next step this, is what the completed code would look
+like for for this program and really all i've done is
+substituting actual memory locations for for the variables so instead of saying load a x
+Now i'm saying load a 14 and 14 is the address, where where our x value is going to be and
+Here where i said subtract
+1, well, well the way the subtract instruction works is it subtracts a value from memory so now we've got subtract
+12 and then we've got a 1 sitting in memory address 12 and instead of jumping to labels like you know continue or top i
+Just filled in the actual addresses, so the jump, carry six or jump zero so this
+Is what we'd actually need to program into the computer and if i convert all those instructions to to binary
+These are the actual ones and zeros i've kind of toggle into the dip switches and of course
+We'll just need to fill in the x&y value to whatever numbers, we want to multiply?
+all right, well let's see if this thing actually, works i'm gonna go ahead and program this thing in
+So i'll just go through, each address one by one and put in the binary machine code for each instruction
+And i'm sure i'll speed all this up so you, don't have to watch me do it in real time
+All right so everything's in but
+We still need to initialize our product x and y values and so i've already got zero put in for the product and
+So then x and y are going to be the two numbers that
+We want to multiply so if we want to, do that same example of three times five then, we can?
+Put that in so in address fourteen, we'll put the three
+So that's the three in address fourteen and then address fifteen, we'll put five
+And so that'll be three times five and then the product. Is going to is going to be put in address 13
+And that's initialized with 0, which is which is where? We want it to start?
+So let's give this thing a, try if we go back into run
+Mode we're already reset if i start the clock this ought to
+Run the whole thing and output the result of 3 times 5 on our output and then halt, so let's let's give it a, whirl
+Hey, and there it goes 15 and it halted so that looks like it's working perfectly
+It's now if we want we can?
+try
+multiplying two different numbers maybe give it a little bit of a harder problem and
+So, again, we've got to initialize our variables so our product now has got a 15 in it right because
+We just ran the program and got 15 so, we need to initialize, that back to 0. Before we start and?
+Then x and y of course are gonna be the two numbers, we want to multiply so?
+let's make x
+7 and
+Y, we'll make 8 seven times eight is a nice hard multiplication problem right and so we'll go back into run
+Mode reset and start the clock and we should get seven times eight?
+56 i think that's right and so
+There we go, we do implemented enough of an instruction set to be turing-complete
+Now with only 16 bytes of ram the computer is still pretty limited but i'm really curious to see
+What programs you all can, devise for it you know the most interesting program i've been able to come up with in 16
+Bytes is this program that computes fibonacci numbers and you can check out one of my older videos where i walk through how
+It works but i also know
+a number of people have expanded the memory to 256 bytes or even 64 k
+I'm really excited to see what programs people can run on those machines and
+Maybe in a future video be fun to feature some things that different people have come up with
+So if you'd like to see that and if you've enjoyed, my videos in general consider clicking the subscribe button
+And also clicking that notification bell so you'll find out, about future videos and if you want you can even support
+These videos directly over on patreon and i really, want to thank, my patrons there whose contributions are truly helping
+Me make more content like this so on behalf of all, my, viewers thank you very much for helping, make, this possible

@@ -1,0 +1,434 @@
+so in previous videos we built the control logic for our computer which consists of a couple [eeprom] basically that are taking the
+instruction from the instruction [register] as well as the step that we're on using this step counter to
+Output control word [some] of [the] problems [are] [programmed] with with micro code that you know based on the instruction
+so if we have a load a which is what we have here 0 0 0 1 is the opcode for Load a
+then based on each step so for the fetch cycle step 0 and 1 and then for the load a step 2 3 & 4
+It sets the appropriate
+Bits on the control word which is right over here?
+You can see it's sequencing through those bits on the control word
+And so when we set this up originally
+We manually program the VD problems just by setting the appropriate input pins
+Manually for each address in this video what I want to do is use the [Arduino] based
+Eeprom programmer that we built in a previous video to make a little bit easier [to] program these [eeproms]
+Which will make it a little bit easier for us to add more
+Instructions other than just the few that we've added so far
+So this is a reminder what we're trying to do
+We've got
+15 bits
+In our control word and we could add [1/16] here which we'll do in a future video for for something and so these are split
+into two sets of really 8 bits
+across the [2] E problems and then the address lines of those e problems are
+There are three bits that indicate which step are on and then we've got the four bits here which indicate which instruction where we're executing
+And for the first two steps of every instruction doesn't matter what instruction
+We have these these to control words the fetch the instruction from from Ram and increment the program counter
+so if we want to program that into our eeprom
+we've got our eeprom here in our programmer that we built with the Arduino and
+The code that I'm going to use this is this the same eeprom programmer code that we used before
+when we built the programmer to start with and
+So we've got a few functions in here
+so we have a set address which sets the address bits and the output enable signal on our on our eeprom and
+then we've got a function here that reads a byte from any problem if we give it an address and we've got a
+Function here that will write a bite to the eeprom if we give it an address and then the byte that we want to write
+We've got a function here that just prints the contents of the eeprom or at least the [first] 256 bytes
+Here is where we are actually going through and programming it
+this is the code we had before where we were writing in some data to
+You know to build that [7-segment] display decoder using the eeprom
+So I'm going to get rid of this because we're going to be writing different data this time around and actually
+Instead of saying that data is going to be an array of bytes because our control word is 16 bits long
+what I'm going to do is I'm going to actually set up our data to be a
+16-bit value
+and then when we actually write it to the eeprom
+We'll pick whether we want the first 8 bits or the second 8 bits because?
+you know we'll want to program the first 8 bits into the into the eeprom on the left and then the second 8 bits into
+the problem on the right but
+Just to kind of organize things what I'm going to do is I'm going to Redefine data as an array of 16-bit values
+So the data type is going to be [un] 16 t instead of things
+this is just an unsigned 16 bit integer, and it's going to be an array and
+we're going to put some data into it and so I'll get rid of all of this stuff because we're not building a
+[7-segment] display decoder
+So for data here basically what we want to do is just replicate the data
+Bits that we have here that we want to program in and we can just kind of go one by one
+So the first value here we can even enter it in binary, so we can do a 0 b
+And that tells that we're giving it a binary number, and I can just enter this there's binary value that
+We've got right here, so let's just do that
+So that's that first value, so it's 16 bits and the second bit here is set
+that's the memory address register in bit and
+Then the second from the last which is actually the third from the last because remember this is 7 bits
+And there's there's going to be another
+Bit here that I'm going to use in a future video
+but for now
+We want to make sure we [just] set these last bits here to 0
+So it's this third from the last bit is a 1 as well
+So that's this first value here right so in for instruction 0 step 0 we're writing that binary value
+We can do the same thing for the next address
+And so here we've got 3 bits set
+so this is the
+Ram out this is the instruction register in and then this is our counter and Eagle which increments the program counter
+So that's this control word here now. We could keep defining all of these just like this just one by one
+Although [you] can imagine this is starting to get a little bit confusing because they're always binary values so what I'm going to do is
+I'm going to define some constants. It's going to make this a little bit easier. So what we can do is we can define
+A constant for each of the petrol bit and then we can combine them so the first
+Bit here is the memory address register in or the Mi?
+and
+That's going to be just this second bit here
+And so the rest of the 14 following bits are all these eros
+And then the other bit that we're going to have set in this first
+Word here is the counter out bit, and that's the third from last [Cos] remember those next to 0 here
+[so] I can define co as [lips] 0 b for binary
+And it's gonna be all zeros except for that bit is going to be a 1 and that's our counter outfit
+And then in our data for that first word that we're putting here rather than defining that in binary. I can use these two
+Things that I've defined the Mi and the co, so I could say Mi
+And then I can do 4 which is this pipe symbol Co
+And what this will do is this will bitwise this vertical pipe symbol in C is a bitwise or operator
+and so what it'll do is it will take these two values and it will do an or of
+Every bit and so 0 or 0 is going to be 0 1 or 0 is going to be 1 and so that will give
+This a 1 here, and then the rest [of] these bits are all 0 or 0 so, there's all gonna be zeros except here
+we're going to get 0 or 1 and it's going to give us a 1 and so if I do a my
+You know bitwise or Co?
+coming to get a value that has the mi bit set in the [co] get set and so
+That will be [a] nice shorthand way of saying exactly what this binary value here is saying it's saying that the Mi
+It is set and it's saying that the fieldid [is] set then for the second value here rather than having that in binary [I] can
+Do the same thing so that's going to be [ro] so [ram] out
+instruction register in and counter enabled
+And of course I need to define those and the fact what I'll do is. I'll go ahead and define all of the bits
+So the first bid is the halt I've already got memory address register in
+So next I'll do
+[ram] in Ram out
+construction register out
+construction register in A
+Register in a register out some out the subtract bit
+Tell the Alu that we're subtracting
+instead of adding B register in
+output register in
+Counter enable and then we already have counter out [signed] so we have just a jump and then that last bit
+we won't define just yet, so
+[now] we've got all [of] our bits defined, and so we can write our micro code using these terms and so for the first instruction
+Or really the zero with instruction. We haven't actually defined that here so so far. We've just defined. You know load a add
+Output and then we did hold as well
+but load a the instruction the opcode for it is 0 0 0 1 we don't have anything at 0 0 0 0
+But we still want that fetch, so we'll do those first two steps
+So the first step is memory encounter out and then the second step is ran out instruction register and the counter enable
+And so for the rest of instruction 0 we'll just have all zeros
+So I won't do anything so add 6 zeros each instruction can have up to eight steps right because our step
+Input to the eproms if three bits
+and
+of course, we
+reset it after it gets to [two] for who resets back to 0
+So we only can impress we only have five steps in our computer
+But because it's a three bit value we could we could have up to eight steps if we weren't resetting it and so we need
+To at least make sure we've got that room in the eeprom
+So we'll just write all zeros to those to those last two steps [our] last three steps
+so this first the first line here, that'll be
+An opcode of all zeros which you know it doesn't do anything, so we'll call it. The no op
+Instruction, so if you wanted to write a program and have an instruction that doesn't do anything
+Maybe you want to insert a little bit of a delay by running an instruction that doesn't do anything you can use this no op
+instruction
+But instruction one, that's the next instruction
+that's load a and so we can write that instruction using this same sort of format, so
+It's like every instruction it starts with a fetch cycle
+So we do the memory address register in and counter out so taking the program counter and putting it into the memory address register
+And then the second instruction in the fetch cycle is going to be always going to be the same ram out instruction register [and] encounter
+enable to Increment the counter
+now for Load A
+for steps two three and four
+We're actually going to do some things or at least four steps two and three we're going to do some things
+So it's step two its
+Instruction register out memory address register in so we can just do I oh
+Mi, so it's going to take the address from a memory from the instruction register and put it into the memory address register and then
+the next step is
+going to say
+[ram] out a register in so
+ram out a in and that's it so we can do 0 0 0 0
+To make sure we want to make sure each of these instructions has eight steps
+so this is going to be instruction 0 0 0 1
+which we're calling Load a
+And I'll slide these up and actually
+I'll just line all the stuff up so that it's
+Easier to keep track of exactly what each instructions doing so the next instruction that we've defined is the add instruction
+so that's just going to be the instruction 0 0 1 0
+so 0 0 1 0 is going to be add
+And it starts out the same way of course every instruction starts out with that fetch cycle
+so a memory address register in counter out and then [ram] out instruction register in counter enable to increment the counter and
+Then for add you know we start out with a instruction register out memory address register in
+That's this
+Step here then the next step is ram out
+Put them in the wrong place the next step is ram out be register in a [ram] out
+Be in as we're putting the value that we're adding into the B register
+then we take some out and
+a register int to take the [sum] out and put it into back into the a register in and
+then we follow that with our zeros, and I'll just
+Space everything out here, so it all lines up, and so that's our add instruction now. What we'll do is
+I'll go ahead and add no Op instructions for the rest of the 16 different
+Valid Op codes right cement fills in the rest of our instructions
+At least our different binary values that for which we could define instructions itself then then with these no ops or no operations
+So they do the fetch cycle which of course we need to do for every instruction
+[those] first two steps need [to] be the fetch and so we've got those for all of these
+But [then] the other commands that happen for for each of these commands we haven't defined yet
+But we can start to do that and so in [fact]
+before we we had an output command defined and we had a halt command defined and
+Output we said it was 1 1 1 0 and halt was 1 1 1 1 so those are just the last two
+Up goes down here and so for output it was very simple
+We just said a register out and output register in to take the contents of the a register and put it on the output
+So that's that's that command. That's the output command, so
+add a little comment over here at the output and
+Then the halt is actually very simple it on the first step here after fetching the instruction
+It just set solved it
+So that's our hold command
+And so these are the commands that we've defined so far and we've manually programmed the eeprom with these commands
+But you can see we now
+It's very easy for us [to] come in here and add additional instructions to our computer
+But before we get to that let's at least try to see if we can get this
+Programmed [onto] an eeprom and see if we can get that eeprom to work so for that remember we changed our
+Array here to be 16 bits instead of 8 bits, so [if] we go back and look at our code here first
+We are erasing the entire from
+Which is fine we can leave that people get rid of that later because it's kind of slow
+[but] we'll leave that for now and then here
+We're programming it and so we're basically just going from address 0 through the size of our data
+Well, we don't want to do this anymore right because our data now the size of it is
+Going to is not going to tell us how many elements there are in data?
+It's going to tell us the size and bytes of data and so now that each element in the Data array is 2 bytes
+This size is going to be a little bit misleading
+So what we want to do is say divide that by the size of one of the elements in Data
+so we just say data is 0 and
+so each of the things that we're putting in data each of the elements in this array is a
+16-bit value or 2 bytes and So we're dividing by 2
+So this should give us the number of elements now
+So we're going to iterate through the number of elements
+But [now] when we write to the eeprom if we just write data sub address that's going [to] refer to the entire 16 bits
+at that address
+But when we're writing to the eeprom it's it's only it's going to interpret this 16-bit thing as a byte
+Which is 8 bits, so how is it going to interpret this [16-bit] [value] as 8 bits well?
+It's going to look at the last 8 bits, and it's just going to ignore the first 8 bits here
+So the way, this is written
+This is going to work fine
+if we're programming the second eeprom
+Because it's always just go look at the last 8 bits and so it's just going to program this column here
+Which is which is [fine] if we want to program that second eeprom
+But we want to program the first eeprom
+We need to tell it to look at the first [eight] bits and the way we do that is by shifting all 16 bits over
+To the right or by shifting all the bits over
+8 positions to the right and so the eight bits on the right just sort of get lost in that shift
+and then these 8 bits [on] the left get shifted over to the right and
+So the way, we do that is just with the shift right 8
+Shift right operator by 8 bits and so that will shift all of these bits over by 8 positions
+And then will effectively be looking at the first column here, so if we want to program the first eeprom
+This is what we want to do so let's go ahead and give this a try. I've got an eeprom in here. So it looks
+upload this to the
+Loops, what do we do?
+[so] I'm missing semicolon [no] oh I see. I'm missing some commas [here]
+that might be all that was
+You verify that it looks like it's compiling, so let's upload that
+And you can see it's uploading and if we look at the serial output
+Yeah, it's going to erase the eeprom first [that'll] take a minute or two so I'll speed that up
+Okay, the program of it, and then it will output what it's got [is] what we see is we see sets of eight bytes
+Right so we've got one two three four five six seven eight bytes. This is our first command
+This is our no Op command, and it's eight bytes long even though we only are going to use the first five right?
+So we reset when we get to five?
+But even though this counter is only counting from 0 to 4 because we reset it when it gets to 5
+It's still it's still [3] bits and so it has and so we're taking up 3 bits of our address space on the eeproms
+So we need to have these [8] [8] bytes here to handle that even though these last three
+We're never actually going to use because we reset it when we get to here
+but we see this 4 0 1 4 in the first [2] bytes of
+every 8 Byte instruction
+if we look at what we're trying to program here these first bytes here 0 1 0 0 that's a 4 and then 0 0
+0 0 is a 0
+So that's our 4 0 and then 1 4 is
+the next instruction here so 0 0 0 1 that's a 1 and 0 1 0 0 is a 4
+So we get therefore 0 1 4 and so every instruction starts with that because that's our fetch cycle
+so for those first two steps we should always see 4 0 1 4
+[instead] [of] so we see 4 0 1 4 and then of course all zeros for our no Op and here
+We see 4 0 1 4 and then we see two
+Instructions that are programmed and this is for our load a and then the rest zeros and then the next instruction in ads
+so we have our [4] [0] [1] 4 and then 3 instructions because [ad]
+Has [3] instructions and then of course [throughout] [two] zeros and these will never get executed
+And then for everything else we haven't programmed it yet, right [so] it's 4 0 1 4 and then a bunch of zeros
+Except for the last ones here
+So this is our [output] so 4 0 1 4 and then we have a bit set here
+And that's let's see the last bit in the first few prom
+Which is four out? That's a a a out
+so that makes sense and
+Then for the [hult] four zero one four we get eight zero and so eight is a one zero zero zero
+Which makes sense for home because we want that first bit? Which is the whole bit set so this looks like it worked
+perfectly well
+So if we pulled this eeprom out of the programmer and use it to replace the first eeprom in our control logic
+It should work the [same]. So now the second eeprom. We should be able to program
+Just the same way the only thing we need to change is
+Rather than shifting these bits to the right we just don't ship them to the right
+So we just get rid of this and so that should allow us to program the second eeprom for for these
+Bits over here on the right, but another way, we could do this is we can actually
+If you look at the the-- prom, we're only using the first
+128 bytes of the eeprom then the rest of the eeprom is blank, but what we could do is we could
+program the
+first half of the control word into the first hundred 28 bytes and
+In the second half of the control word into the second hundred and twenty eight bytes down here so that if we're using that
+Eeprom that we program that way is the left eeprom and [we] just want to make [sure] we're using the first
+128 bytes, which of course is what we're doing
+But if we're using that same eeprom as the right eeprom we want to use the next 128 bytes
+And we can do that by setting the address line, [a7] I guess is the 8th day dress line
+we have that tied to ground here if we tied that high
+then the rest of the address lines that are selecting the address would be offset by
+128 because this is this is 128 place of the address lines
+So we just set that high that [will] add 128 to every address that we input here
+And so what we can do is we can actually program both eeprom is exactly the same
+But depending on whether we've set that address line to a 0 or a 1 will determine which function it serves
+So that can make it a lot easier to program these we don't have to think about which [one]
+we're programming will both be the same and it's just where we where we insert the chip and then it will just matter how we
+How we tie this lines?
+We'll have to change this from being tied to ground like it is here to being tied to 5 volts, but that's easy enough
+[so] [to] do that
+What we want to do is take this loop here where we're programming the eeprom and just duplicate that so here
+We're going to program the first 120 eight bytes, and then here we want to program the second hundred twenty eight bytes
+So what's going to be different is our address we're going to add 128 to it just to shift it
+And then rather than shifting right we don't ship right and that way and the data that we write there will be
+This second column, so let's give that [a] try
+Go ahead [and] upload that
+And we'll look at our serial output and of course it's going to [erase] the [eeprom] will speed this up
+And now [it's] programming it and here we go
+you can [see] it's now programmed the
+second half of this differently
+So we got the four zero one [four] starting out every command just as we did before
+But then for the second half of the eeprom each each fetch cycle is zero four zero eight, so let's see if that makes sense
+So that would that would [be] four for this so zero four would be 0 0 0 0 that's 0
+0 1 0 0 is 4 So 0 4 and then 0
+8 1 0 0 [0] is 8 so that looks right?
+so for the second half of the eeprom so from here on
+It's going to effectively be the micro code for these 8 bits here on the right
+So let's give this a trial
+It's reprogrammed both of these [eat] problems and see if we can get the computer to work the way that we want it to so
+take power off the computer and
+We'll just put each of these chips into our programmer one at a time and program them
+There's our first chip [I'll] reupload that
+Ok there, we go. We've programmed our first [eeprom]
+I'll pop this out
+Put it back in the computer
+[and]
+then the second one we're going to do identically and I'm just going to reset the
+Arduino it should rerun the program
+Yep, there it goes racing
+And programming and now this eeprom is programmed identically to the other one
+Pull that out put it back in hopefully in the right loose
+and so now both of these problems are programmed identically which means if we power up the computer now and
+I'll stop the clock and reset and so what we see is we see the memory in
+Let's look at what we only want to be seeing here
+So we want to see memory in but then we want to see counter out, but instead what we're seeing is
+Subtract which is not what we want, but the reason we're seeing subtract is because we're seeing the same thing on both, so we're seeing
+The second bit here set memory in and then we're seeing a second bit set over [here] because both of you problems are the same
+and if we advance the clock
+to T2
+We see ram out instruction register in which is exactly what we want
+but then we see those same two bits repeated over here where what we should see is just count or enable and
+We don't see counter enable. We see output enable a counter out which again
+It's just these two bits mapped over here
+but that's because
+this a seven on
+Both of these is set to zero so we're looking at the first hundred and twenty eight bytes on
+Both of these and we want to do is look look at the first hundred twenty eight bytes on here and the second hundred twenty
+Eight bytes on here, so if we just change this [0] on this address line to a 1 we should be doing that
+So let's take this jumper out it's time up to to ground and instead
+Connect it to 5 volts and [now] you see when I connect that address line to 5 volts this changes
+And it's now the counter enable bit. Which is exactly
+142 so now if I reset back to t0
+We see memory address register in and counter out
+I'm register strain counter out and if we advance the clock to [t] 1 we see ram out instruction register in counter enable
+Which is exactly what we want to see so it looks like at least the first two bytes
+In each of these is working just fine
+so now let's try programming something that we've programmed before and see if it works, so we'll go to address [0] and we'll do a
+Load a
+14 address 1
+We'll do an add
+15 and address 2 will do output and address three will do halt and then
+Go to 14 and put in the value and go to 15 and put in a value
+and
+Let's try running [that]
+And that looks like it ran successfully [and] if we reset the computer it should run again
+And there we go
+So we've basically reprogrammed our [eeproms] and done the same thing that we did when we manually programmed it
+But now we've got a nice way of being able to add additional commands, so let's try adding a subtract command
+So if we want to add a subtract command, it's basically going to be the same as the add command
+Where we want to take the address of the value that we want to subtract from the instruction register so instruction register out?
+Put that into the memory address register
+so memory address register in
+Then we want to take that value that we fetch for memory to [ram] out put it into the B register
+and
+We and just like the add command we want to take the sum out and then put that back into the a register
+but instead of it being the sum we want to subtract so we just set the subtract bit and
+Setting that subtract bit will make the alu subtract instead of add, and so otherwise. It's just the same
+I'm just going to add some [extra] spaces here to make this pretty so there we go
+so [that] adds a subtract command
+Which is 0 0 1 1 and of course next we need to actually program our [eeproms] with that new Microcode
+So the subtract command will be available to us
+So we can do that
+Just like before so we'll power that off and we'll pull the eproms out and one by one
+Program them with the programmer. There's our first key problem, and we'll upload the code and our serial monitor
+And it's erasing which will speed up and now it's programming and there we go
+So [now] [that] should have the subtract command in it, so I'll pull this out put it back
+Yeah, I get the next one and program it as well
+And I'll just hit reset and I'll rerun the [program] and it's a racing which I'll speed up
+And I guess I could get rid of the code that erases
+I don't know why we need to erase it every time because we're just going to be writing over all the stuff
+We care about anyway, and we're programming this one
+And we're done
+Now the second p. Prime is programmed, and so we'll put it back
+in like that and
+So now we'll power up the computer again
+Stop the clock and reset everything
+it's now we have a subtract command, so let's write a program and let's say for instruction zero we're going to say Load a
+fifteen then we're going to add
+14 and Subtract 13 help put the result and then halt
+So this is our program if we want to then assemble this program
+So this is assembly language with these mid Knotek's
+so to assemble this into the the machine code an address 0 we want to put a load a 15 in to load a if
+We come over here is how is opcode 1 so this is going [to] be?
+0 0 0 1 and then the operand is address 15 so 1 1 1 1
+[ok] then we want to do an aDd 14
+[well] add is 0 0 1 [0] so 0 0 1 0 is our add command and we want to aDd 14
+So 14 is 1 1 1 0 then we want to do is subtract 13 [since] the [practices] command we just added
+So the opcode for that is 0 0 1 [1] so 0 0 1 1 and then the operand is 13
+So that's 1 1 0 1 and an output we can come over here. We also have our output command is 1 1 1 0
+and
+It doesn't take any parameter so we can just set this to all [zeros] and then the halt command is
+1 1 1 1 1 1 1 1 and it also doesn't take any
+Operands we need to set those to all zeros, so this is now the the binary representation of this program
+And we also need the data right because we're saying load something from address 15 add
+Something to it from address 14 and then subtract something from it that was in address 13 and then output the result
+So I think the question is what math problem do we want to do so we could just say ok well?
+we're going to load a 5
+[add] a 6 to it and then subtract a 7 from that just making up numbers here
+so if we load a five add six, and then subtract seven
+That should give us a four, right?
+So let's put these values into memory so five is going to be
+0 0 0 0 0 1 0 1 is 5 and then 6 0 0 0 0
+[0]
+1 1 0 and then 7 is 0 0 0 0 0 1 1 1
+So we'll just program those and of course we can put any values here
+And that'll be the numbers that we're loading then starting when you're adding and then subtracting
+so 5 plus 6 minus 7 is what we're doing here, so we should get 4 so let's go ahead and
+Program this in and see [if] our subtract command works, so we're going to program load
+We're address 0 and we want to do our load a so let's program in our load a 15 there it is
+Now we go to address 1 and program in our add 14, so we've had
+14
+And there it is and then we go to address 2
+And we want to subtract 13, so that's our subtract and a 13
+so there we go 0 0 1 1 is subtract, and then 13 now I want to go to address 3 and
+output the result so 1 1 1 0 is our opcode
+So I goes 3 and we have output and then address for we'll put our
+hold command
+[ok], so that's the program and now we need the data. So if we go to
+Address 13 so 1 1 0 1 we can put our 7 in there
+and then address
+14
+We'll put our 6
+and finally address 15 will put this 5
+There's a 5 so go back to run mode
+reset and
+I
+guess I'll just let it rip and see if it works, so if if we're going to load
+[fifteen], it's a five
+we're go low to five we're going to add a six to it and then we're going to subtract a
+Seven and output the results. We should get a four so let's see what we get
+okay, there's a four and it halted so it looks like the subtract worked and so now hopefully you can see it's pretty easy to
+Come in here and add all sorts of different commands based on the different control signals that we've got [available] to us and we can
+You know fill in the rest of these with whatever commands we want or whatever opcode we want to add to our computer
+We can do so in the next video. That's what I'll do is. I'll fill out some more of these and
+You know start writing some more complex programs
+you

@@ -1,0 +1,5 @@
+meeting monday about the march release
+bob wants more testing before we ship
+budget is tight this quarter
+next meeting friday 2pm
+remember: update the changelog

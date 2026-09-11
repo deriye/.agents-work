@@ -1,3 +1,17 @@
 node_modules
 .venv
 .env
+
+# Build artifacts / compiled binaries
+*.exe
+*.out
+*.o
+*.obj
+__pycache__/
+
+# Qt Creator / CMake out-of-source build dirs
+build-*/
+CMakeFiles/
+
+# Rust / Cargo build output
+target/

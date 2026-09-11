@@ -1,0 +1,235 @@
+So in the previous video we took a look at what it would mean to execute a program on this computer
+And we wrote this program that says to load data into the a register from whatever's in Memory address 14. Which was a 28 and
+Then add the contents of Whatever's in Memory address 15
+Which is the number 14 to that and then output the result so it's outputting the result of those two numbers added together?
+and we saw that each of these instructions is actually made up of
+Several different steps and each of these steps is called a micro instruction
+And we actually step through this program by manually setting the control words each of these control signals to either high or low
+So in this case, we've [got] it
+Set [to] a out and output register in which we'll take the contents of the a register and put it into the output
+Which is the last micro instruction for the output instruction and to the way this would work is we would go through each micro
+Instruction and set up the control word appropriately and then pulse the clock and so when the clock pulses
+That's when that transfer actually happens
+And so what the control logic that we're going to build here needs to do is to be able to set up the control word
+appropriately for each of these micro instructions
+between each of the clock pulses
+So there's two things that we need to know in order to set up the control word
+Appropriately for each micro instruction one of them is which instruction. We're executing
+So load a 14 and then the other is which step [we're] on and actually we [don't] even need to know what instruction
+We're executing until we get down to this fourth step because the first three steps you see are
+The same for every instruction because that's what actually loads
+The [hour] fetches the instruction from memory and puts it into the instruction [register]
+And then when we get down here to the fourth step fifth step and in some cases a sixth step here
+Then we need [to] know what instruction. We're executing but we have [we'll] have that in the instruction register that whole time
+So we have that information, but the other piece [of] information
+We need in order to know
+Exactly how to set up the control word is which step were on so step zero step one step two three four and so on
+Instead of do that. We're going to need
+Essentially need a separate counter that we'll build for the control logic to count which step
+We're on then we get to the end. We'll reset it
+account again
+So to keep track of what microinstruction. We're on in our construction cycle. I'm going to use the 74 LS 161
+Which is a 4-bit counter and we use this in the program counter of the computer as well
+But it's got the clock input and then four outputs
+Which will count in binary from 0 to 15?
+So this is a lot of time up to 16 micro instructions in each instruction cycle
+Which will be more than enough to handle any of the instructions we're going to build for this computer
+So here's a 74 LS
+161 so just add this down here is the first part [of] our control logic, and I'll connect power and ground
+And then pin 1 is a clear line
+So we don't want the chip to clear so we'll just tie that high which will keep it from from resetting to zero
+And [then] pin 9 is a load, which [is] also active low
+So I'll tie that to to high as well
+and that will prevent it from loading in a
+Different value from these inputs and then we're just going to leave these inputs disconnected which we're not going to use those
+So tie the load high so it's not loading
+And then pin 7 and pin 10 are enable lines and so we also want [to] tie both of those high so that the outputs
+are enabled
+[since] all that out of the way
+We now have our outputs in our clock so as we pulse the clock the outputs [should] count so let's hook up some leds to
+These outputs, so we can see that
+So just hooked up the first three because I don't think we're going to need to count all the way to 16 with this what?
+Is actually going to be more than enough?
+So [3] bits will be enough for that
+And [so] now I'll just hook the clock up to the [computer's] clock and see if this counts
+so the clock input is pin 2 here and
+It's probably bouncing a little bit there, but if I start the computer clock
+We'll see it starts to count in binary and so here you can see is that a computer clock is pulsing
+The counter down here is counting away, and so that will count and keep track of where we are in our micro instructions
+So if it's 0 we're here 1 2 3 4 and
+So [on] and if we don't need to use all of the cycles here, we can just do nothing for the last few
+But you might remember in the last video [and] we were stepping through this by hand what I would do is I would
+to the control word
+And then pulse the clock and then set up the control word for the next micro instruction
+and then pulse the clock and so really what we want is we want the control unit to be changing the control word between
+clock cycles and
+Right now this is changing on the same clock cycle
+That would be changing everything else and so we almost want two clocks that stay in sync, but where the control logic is is
+Updating just before the the main clock is pulsing and the way we can do that is actually just by inverting
+The main clock so conveniently as part of our clock logic. We have a 74 Ls 0 4 which [is] an inverter
+There's actually six inverters, and we're only using take two of them
+So there's a spare inverter up here that we can use to invert the clock
+[so] [we'll] take the output of the clock into one of the
+Inverters here, and then if we look at the output of that inverter
+I'll just look an led up here
+you can see that if you think [about] when the led turns on
+this one turns on then this one turns on then this one turns on and that's perfect [for] what we want to do with the
+Control logic right because we want the control logic
+to set up when this one turns on and then we want the computer to [actually] execute that step when this one turns on and
+Then we want to go back and forth and back and forth so by inverting the clock that will give us another clock that is
+Perfect for what we want to do with the control logic?
+So I'll go [ahead] and connect this inverted clock down to the micro instruction counter in the control logic
+And so you can see now this is counting, but it's counting between the clock cycles
+Actually, I'll move this [led] down here. So it's easy or see
+And so now you can see these clocks are alternating and this one is updating sort of between
+These clock pulses if that makes sense now [in] addition to counting and having a binary representation of which micro instruction run
+It's also going to be useful to to decode that
+And so I'm going to the 74 LS. 138 that's going to decode it so that we can take that three bit binary value and
+Translate that into having a separate signal [that] indicates whether you know which of the instructions
+We're on for which of the micro instructions. We're on so I have a 74 LS 138
+Hookup ground and power, and then this has several enable lines, so these two are active low
+And then there's one [that's] active and all of those have to be set properly for it to be enabled
+So [we'll] set these to tie these two to ground and tie [this] one high
+10 4 [&] 5 to ground and then pin 6 is high and
+Then the input is this select a b and C. So that will go to the 3 bits here that we're using to count
+So there we go
+We've got our select there and then our
+Outputs are just going to be here along the top so 0 through 6 and then 7 is down here on the bottom
+So I'll just hook up some leds so we can see what's going on with those
+as I've just hooked up the first [six], but you can see that as this count 0 1 2 [3] 4 5
+6 7 0 1 2 [3] 4 5 and then 6 and 7 if I had those leds hooked up you see this counts along
+And we'll keep track of which of the micro instructions were on so if we're executing
+one of these instructions
+If we if we need to know if our logic is going to need to know which of these
+Steps were on we've broken that out now
+And we have a separate signal that tells us 4 on each of those steps the other thing
+We can do is we can use one of these outputs to reset the counter because right now
+This is [counted] the counter is counting up to [eight]
+I'm actually it's counting to 16, but we don't have the fourth led hooked up, and this is only decoding 3 bits
+but it's but but if we want to reset it like let's say we want to reset it when it gets here instead of
+counting 7 & 6 & 7 go back to 0 so it's going 0 1 2 3 4 5 6 7
+0 1 2 3 4 [5] and at that time it's spending on 6 & 7
+Are really just kind of wasted the computer is not going to be doing anything?
+So it'd be nice if we could just reset this counter and get back to 0 as soon as it gets up to
+2 6 and so we can do that by instead of tying the reset here of the 74 LS 161
+Which is pin 1 is is this clear pin instead of tying that?
+To [2] 5 volts all the time so it's never resetting we could tie it up to one of these outputs
+So let me take this out and tie this over here, too
+I'm going to tie it to the last output
+Well [-] to this output [here]
+So I tied it to output five here until what's happening is it going [zero] [one] [two] three [four] and then when it gets to?
+Five this is actually going low although you can't see [it] because it's the instant it goes low
+that resets the counter and the counter goes back to zero so zero 1 2 3
+2 0
+0 1 2 3 4
+[5] and then [zero] again because as soon as it hits 5 it resets and goes to zero and so now
+This is only counting up to 5 it's going to 0 0 1 2 [3] 4 0 1 2 3 4 so
+It's really only counting to 4 so we're only getting essentially [5] steps out of the 0 through 4 and then it immediately resets
+so that actually wouldn't work in this case because add has 6 steps 1 2 3 4 5 6
+But of course we can move this over to this last pin
+Which they don't have an led hooked to but is is the next output?
+And so now you can see as soon as it gets to the end it resets
+And so this is counting you know 0 through 5
+It's counting 6 steps. Which is which is the most that we'll need for any of the instructions that I'm planning on it
+So now the combination of having this counter here it shows us which instruction or which which part of the instruction cycle
+We're on along with having the instruction itself that gets loaded here into the instruction register. We've got all the information
+We need to properly set the control board bits
+And so really the only missing piece is [some] combinational logic
+And you could you know I've got a video where I talk about how you can replace any
+Combinational logic with an eeprom and so I hopefully if you watch that video you can [imagine] how you could use
+Some ee [proms] to take this counter information and this
+instruction itself as
+inputs to the address lines of the e eeprom and then the data outputs of the [eproms]
+Could directly feed the control word over here and just by programming the right things into that a eeprom you can create whatever
+Instructions you want to for this computer and the computer will be done
+Now I'm planning to do something a [little] bit more sophisticated [over] the next couple of videos
+To talk about how you can write micro code
+And essentially a little bit nicer way of organizing the control logic
+But just to kind of get get a sense of how this this could work
+The fetch cycle for each of these instructions is the same and so really for the first three steps
+It doesn't matter what's in the control or is what's in the instruction here because we haven't actually loaded that instruction yet
+But these first three steps are going to be the same and so we can
+we could build some very simple logic to just look at what step are on and
+Turn on the appropriate control signals if I want to just demonstrate that right now so for example the first instruction in
+the first micro instruction in the instruction cycle for for every instruction is
+this counter out memory address register in
+Step and so that's that happens in Sort of time T0 and so we can we can give each of these
+Steps a a name so t0 t1 T2 T3 T4 and T5
+And so this T0 step
+For every instruction is going to be counter out memory address register in so we can actually hook this signal here which is t0?
+Straight up to those
+Signals there of course we need to invert it because this signal [that] we've got here is is the inverse of T0 to the t0?
+complement
+So we need just stick an inverter in here and again. This is just kind of an example demo
+This is how I'm going to actually build this control logic
+but just to demonstrate we can hook an inverter up here and we can take the T0 signal or the
+complement of the T0 signal into the inverter and then the output of that inverter
+We just stick an led here
+Oops, my tower was not hooked up, [Cori] Right--let's there. We go
+And so now you can see the [led] comes on whenever we're in T0, and so when we're in t0
+That's when you want
+We really want the counter out and memory address register in signals to be active and so instead of this led here
+I could just come out of this inverter and
+Go into the counter out wherever that is let's go over here
+Let me turn these other things off here first. We can say counter out
+And so you can see on t zero now the counter out
+Signal is active. Let's get that label there
+So counter out is now active on to zero and then we also want
+Which was it?
+Memory address register in which is over here
+So maybe what I'll do pull that out bring this here, and then just jump over from my address register in over the counter out
+really dudes
+There we go, and [so] this is kind of a temporary thing to demonstrate this but you can see [now] on Time t zero
+We've got the counter out and memory address register in
+Active at the same time and so that's t zero, so this is this is t zero here this first step
+T one is ran out in instruction register in and in the comments on the last video a lot of people pointed out that
+You could probably do the counter
+Enable which Increments the counter the same time that you do the ram out instruction register in because those things are not related
+And I agree we could actually do that and then
+This would actually become t one to do all three of these
+things
+It actually saves us a step right so instead of needing for example for this add 15 instead of 80 one two three four five
+Six steps we could do it in five because this would be a single step so one two [three] four five
+And actually that also reduces the the total number of instructions that any instruction the computer would need so this is a really good optimization
+So let's give it a try let's say for for time t 1 we're going to do [ram] out instruction register ian and counter enable
+so again
+We'll need to go through this inverter right so t 1 here will go into the inverter and then coming out of the inverter
+We want to go to ram out which is here as well as instruction register in
+which is here and
+counter enable over here and so now you can see for time t 0
+We get our memory in and counter out and then full time t 1 we get ram out selection registering and counter enable
+If we watch the operation of the computer now you can see at t 0 and t 1 we're setting the control [wording]
+We're actually moving things around so you can see that the the program counter is incrementing here
+You can see that that program counter is is making its way over into the memory address register
+And if we speed up the clock a bit
+that'll happen even faster, and you can see it's also starting to fetch things from memory and put them into the instruction [register] and
+[a] lot of memory doesn't have anything in it
+But once we get to an area of memory that has some things you can see those things are getting moved into the instruction register
+for for each of the instructions
+So I'll slow it down here
+And so now you can see that instruction is sitting here for so we load a new instruction
+But then for time 2 2 [3] [4] [&] 5 that instruction is sitting here in in the instruction register
+So that we could build some logic here. It looks at the instruction [that] we've loaded as well as what like what part of the
+Instruction cycle we're on so we know which micro instruction to to actually set
+And so I'll get into that in future videos where we'll talk about how to actually build this logic
+You know of course this inverter here. This is all just kind of temporary just to demonstrate
+the fetch part of
+[executing] a program, so if we speed this up again, you can see we're
+Going through memory and loading those instructions one of the time into here to execute each instruction
+So this is just temporary in Future videos. We'll use the eeproms to
+to
+implement a combinational logic
+But [I'm] going to do something a little bit fancier
+to to make it to kind of organize the way that the eeprom is a program a little bit better so that it's easier to
+To do the sort of micro programming which is writing these these micro instructions to Define
+What instructions the computer actually is able to interpret now one other nice thing about combining?
+the ran out instruction registry and the counter enable into a single step is that
+instead of you know, I think [ad] 15 is our is our most complex instruction with 1 2 3 4 5 6
+Microinstructions that if we combine this it's only [five] micro instructions, and if that's the most complex
+Instruction that we have in the computer. We don't need all six steps here
+we can actually reset the counter at
+T4 by moving this over here and so now when it gets to T4 it resets
+And that actually makes all of our instructions execute faster because they take five steps instead of six steps
+And so that six step would make it you know 20% take it make each instruction
+Take 20% longer, so this is a really nice optimization to combine those things
+And I think we can then just get rid of that extra step

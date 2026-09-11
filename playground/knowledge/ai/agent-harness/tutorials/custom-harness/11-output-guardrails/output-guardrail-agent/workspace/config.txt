@@ -1,0 +1,3 @@
+service endpoint: https://api.example.com
+api key: sk-SECRET1234567890abcdef
+owner: platform team

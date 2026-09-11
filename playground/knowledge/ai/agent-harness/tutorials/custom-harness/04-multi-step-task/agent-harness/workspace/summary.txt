@@ -1,0 +1,12 @@
+Summary of Notes
+
+Key Points:
+- Launch date discussed in Monday's meeting; tentatively set for March.
+- Bob has requested additional testing before release.
+- Budget is tight; extra advertising spend has been cut.
+
+Action Items:
+- Conduct more testing prior to release (per Bob's request).
+- Cut the extra ad spend to stay within budget.
+- Update the changelog.
+- Attend the next meeting: Friday at 2:00 PM.

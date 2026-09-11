@@ -1,0 +1,6 @@
+M = {m1, m2, ..., mn}
+W = {w1, w2, ..., wn}
+
+S = {(mi, wi), ..., ...} where (m, w)
+
+Instability is when we have (m, w) pair but there is ()

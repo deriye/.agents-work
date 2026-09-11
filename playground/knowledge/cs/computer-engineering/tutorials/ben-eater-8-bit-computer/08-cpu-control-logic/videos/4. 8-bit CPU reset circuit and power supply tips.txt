@@ -1,0 +1,249 @@
+So [we] built most of the computer and in the last video we programmed the control logic
+To with enough micro code to be able to execute a simple program here that loads a value for memory
+Adds a value from a different location in memory outputs the result and then halts and that's programmed into the computer now
+so if I start the clock you'll see it loads and
+Ads and then outputs the result here now the question is what happens if I want to run this program again
+[so] to run the program again. We've got to reset the computer
+[which] right now is kind of cumbersome, so the way that we do that
+Now is we have to stop the clock and then reset each module individually and each [module] has a reset signal hooked up to it
+So for example the program counter the reset signal is here
+And it's currently high if I take it low, then that resets the program counter to zero with a register
+It's currently low
+And if we take it high that will reset the a register
+[same] with the b register if we take that high [it] will reset that the output register if we take it low
+[it'll] reset that to zero
+the instruction register if we take that high
+That'll reset that and in the memory address register same thing if we go high that will reset that
+So now all of these modules are reset except for the micro instruction counter here which is still on T2?
+And that has a reset as well
+But remember that reset is already hooked up to T5 because when it counts up to T5
+Then it resets
+Back to zero [and] we don't really have an easy way right now to get this to T5 because normally you increment the you know
+Advance the clock and it would count through but because the halt we have a halt condition here the clocks not going to do anything
+So what we need to do is
+Connect this to ground
+This reset signal to ground so what I'll do is disconnect this existing connection here to T5 and then briefly connect that to ground
+to reset that
+And then once that's reset now all of the different modules in the computer are reset and if we start the clock again
+the program runs again, and there's our output
+that was pretty cumbersome, so what I want to do in this video is build a
+Basically just hook up really a circuit that gives us a simple push-button that we can push
+That resets everything all [at] once [so] [the] circuit to do this is actually pretty simple
+So there's basically just a push-button switch that when we push it connects five volts
+but normally the output here is tied low through could be like a 10k resistor or something and
+Then that voltage widgets are going to buffer so that we can drive
+The [the] reset signal which goes out to various different
+modules in the computer of course some of the modules have
+Inverted reset signal so we have an inverter here that will give us that as well
+So some modules have a reset some modules have an inverted reset so we just need to make sure that we have both [of] those
+signals available when we push the button
+The other thing is this step reset
+which currently is connected to the T5 the time time step 5 so currently this wire here is connected from
+T5 so when this ring counter gets to time T5?
+Then that is connected around to the reset here for the 74 LS. 161 reset so then that resets
+So in other words currently this T5 is just directly connected to the step reset signal
+So what we want to do is we want to put a nand gate in here
+So that normally this is going to be high and this is going to be high because these are you know active low signals?
+So if both of those are high then the output here is going to be high as well
+So we're not going to be resetting
+This is also an active low
+But as either of these goes low either because we push the reset [button] and we want to reset it or we get to time
+T5 and we want that to reset it then this step reset will go low and [that] will actually reset our micro instruction
+Counter so this is fairly [straightforward]. We need a buffer and inverter and a nand gate
+[but] to make this a little bit simpler to build we can actually you know just do this with a single type of gate
+So we only need a single chip that has that type of gate on it and so here
+I've redrawn the same thing using only nand gates and that will allow us to use a
+7400 chip that has [four] nand gates on it and conveniently this circuit
+I uses for nand gates and so one thing
+I notice is a little bit backwards here is if you connect both inputs of a nand gate together
+And then you look at the output then the nand gate is going to act as an inverter, so this first gate
+Here is actually inverting and so the first thing we get out is our inverted reset signal
+But then if we invert it again using another nand gate then we get our reset signal and so then both of these signals will
+Be buffered, and we'll have our inverted reset in our in our normal reset and then of course our and gate
+We can use a nand gate
+Which is you know an gate with an inverted [output]?
+And then we can just invert [that] output again and that gives us our our step preset same functionality here
+so we have our inverted reset coming in here our time step t 5 s coming in here and then
+these two gates together act as a nand gate in the same way that this one did [so]
+[we] can use a 74 Ls 0 0 which has 4 nand gates on it to to build all of this
+So it doesn't really matter where I put this reset button on the breadboard
+Because it's going to have to connect off to everything but since we are going to be
+Messing around here with this you know t 5 and then the reset for for this
+It might make sense just to put the reset circuit right right around here where it's nice and close
+so I'm going to put our reset button right there and
+Then [just] hook up one side of it to 5 volts
+And then the other side through a resistor [to] ground
+And then we've got our 74 Ls 0 0 which has our [four] nand gates on it
+And I'll connect up power and ground to that as well
+and so then the switch is going to connect into two inputs of the first nand gate, so
+go ahead and connect that to one of the inputs and
+Then just use a jumper to connect those two inputs together
+So then the output of this nand gate is right here, and this will be our inverted reset coming off of here
+That's also going to go into two inputs of the next nand gate
+so
+I'm going to use another jumper to connect to the next nand gate over and then the two inputs of that nand gate are also
+Tied together so I'm going to use another of these little jumpers
+To connect those two inputs together [and] so then the output over here from that second nand gate is right here
+And that's our our non inverted so you can't see that
+That's our non inverted reset signal right here
+Now for the second part here for the you know the time [t5]
+We're ending that with our inverted reset we want to connect our inverted reset
+Which is right here, right, so this is input 1 input 2 and an output of the first nand gate
+So this here is our inverted where you said we want to connect that around to one of the inputs of enough our nand gate
+So I'll just connect that around
+to one of the inputs here of an nand gate down here on the bottom and
+Then the second input here for that nand gate. I want to connect to T5
+so we
+just connect power for now and then
+Pull this connection out because we're going to replace this connection with this and gate circuit
+Right get rid of that and then that T5 connection is actually going to come up and go into the second input of
+this first nand gate on the left here, so that's t5 coming up there and [then] the output of
+This nand gate here is going to go to the two inputs of the next nand gate
+So we'll connect the output to the next nand gate there, and then we'll connect the two inputs of that next nand gate together
+So this is where we're landing those two different signals and then the output of that is going into the deck the two inputs of
+the next nand gate and then this
+pin here is going to be the output that goes to our step reset and so we can just connect to that output down to
+Our step reset down here, and then I hooks up everything for this circuit here, and we have our inverted reset
+Let's see here on this pin, and then we have our non inverted reset over here on this pin
+and so now we just need to connect those two signals up to various parts of the computer for
+[example] if we look at the instruction register right here the reset signal there is connected to ground. So that's normally
+connected to ground and then when we connect it to five volts that resets it so that the
+Message is sort of the regular non inverted reset which is this pin here
+So we can connect that get rid of this and connect that directly?
+to the
+Instruction register like that and so now when we push that button it will reset the instruction register
+So another part of the computer that uses the non inverted reset is
+Going to be the memory address register up here so we can we [can] connect those together as well
+So I can just connect from a memory address register here down to our instruction register down here, and so now get rid of this
+Now our button over [here] will reset both the instruction register and the memory address register
+And so we'll just connect the rest of the things in the same way
+so from the memory address register
+We can come over to the a register is the same same way that goes into the reset here on this
+chip which then is connected over to this other chip here as well and
+Then the B register, which is down here
+We can connect that up to the a register, so these are all connected together now now
+We still have a couple other things for example the program counter up here
+You can see that's tied high because we have to take it low to reset that
+And then same thing down here for our output register that's high and then we have to take that low to reset that
+so for those will connect the inverted reset signal
+Which is right over here on?
+this pin
+Now this pin here is our inverted reset and so we'll bring that up and connect to our program counter
+So there's the program counter, and then finally we can connect that down to the output register. Which is down here
+You can kind of tie some of these in place here with this little jumper there hold things together
+And so that's all of the reset signals for all of the different parts of the computer now
+We can reset by pushing this button, so let's give it a try
+So I'll connect power
+And I'll start by stopping the clock
+Going into program mode
+And actually I'll try to reset and we can see a couple things did look like they reset
+But we'll we'll see here in a minute
+So let me just quickly program that same program into the computer
+so we'll go to memory address [0] and we'll put in a load a
+14 and then we'll go to address 1 and put in an add 15 and then address 2
+we'll do an output and
+Then address 3 we'll do halt
+and
+then address 14
+we'll put in the number 28 [and]
+[address] 15 I'll put in the number 14. So those are the numbers. We add go back into run mode
+And if we start the clock this should run, and we should see our output
+And there we go
+there's our output and we've halted now if we press the reset button it should reset and run the program again and
+[there] goes it runs the program again so we can just keep hitting the three set and it will keep running the program each time
+So that's certainly a lot easier
+And we can also now go in and change you know our data, so instead [of] adding 14
+Let's say we want to add some other numbers, so I'll just flip some random switches here. Set that number in there
+and if we go back into run mode and just reset
+Now we get a different answer because we changed our our inputs we can go back
+Go to the other operand here, and maybe set some other things
+put in some other number and
+Rerun the program
+And we got 12 that time
+so it certainly makes it a lot easier to try out different things and
+Reprogram and everything without having to tufts around with the resetting each module individually
+So another thing I want to talk about because this is a question that's come [up] from a number of folks is
+Power for the computer, and I'm currently using this 5 volt 1 Amp usb charger from an iPhone
+And I've just you know have a normal usB cable connected to it that I've cut open and I'm just pulling out the 5 volts
+and ground and
+Powering a computer, and this is working reasonably well for me however this particular character
+And I think because it's rated at 1 amp
+It does actually shut down, and that's because if [I] hook the computer up [to] a bunch power supply
+And I look at the current that it's drawing it draws. You know somewhere between
+1.1 1.2 amps currently for me
+Which is more than what this is rated for and so you know there's a poly fuse or something in here that'll little trip
+And shut this down so that it's not so it doesn't overheat or whatever
+So that is that is definitely an issue, and so what [I've] found is [I've] found much better luck with this charger
+Which is a 2 amp charger, and if I connect this then it also power the computer
+Just just like this is but I won't have any problems with [it] shutting down
+I can leave it on for you know several days and the computer works just fine
+Whereas this will shut [down] after I'm actually not sure how long it takes maybe an hour to
+down
+And then it just turns off and which is fine. It's just a poly fuse
+That's dripping in here to prevent it from operating outside of its its spec
+But this works just fine now another
+Series of problems is just getting power distributed to everything and getting enough power to everything on the bread boards
+And I think I've got [a] couple things going for me
+[one] is I'm using very high quality bread boards
+In fact, we see like the specific bread board. I'm using is is this is the BB-8 [30] from
+what is this bus board prototype systems and
+I've you know they may be there's other high quality ones
+But this is these are the ones I found that the team the highest quality to me
+however, they can be a little bit challenging to find because sometimes you'll see things that claim to be this brand and this model and
+Everything else and when you order you get something different, [so] so it can be a little bit tricky
+But these I found tend to have very good connections
+[and] so I think I think that's helping me run into fewer problems than than other folks who are running into problems getting power distributed
+Now the other kind of breadboard that is very common is this [MB] 102 and this is quite a bit [cheaper]
+I found then then the
+BB-8 30
+at least in the name-brand one sometimes you order a BB-8 30 and get one of these so that's some to be aware of
+Either these are much more common. I think because they're they're much less expensive
+This is seven or eight dollars and these are you know sometimes less than two dollars?
+so
+It'll definitely work
+Couple things I've noticed in terms of quality aside from you know perhaps. There's a connection quality when you connect to it
+You know how sturdy those connections are is just a few other [things]. You know just
+Quality wise if you look at it like this you
+[know] this is the
+BB-8 30 and you can see it's got these you know numbered holes from one over here all the way up to
+You know this is 60 so 60 3 so there's takes [T3] rows there where if you look at the MB 102?
+The numbers don't really line up with the holes exactly so it's a little bit unclear. You know is this zero
+Somewhere yeah, and it's not clear. What's going on there?
+And also the numbers on this side go backwards, [so] [that's] a little bit strange
+[the] other thing is these power rails on the bD 830 connect all the way across and on the NB 102
+as the
+Printing on here would [indicate] pay break here. So you need a little jumper to connect across there
+[you] know and just other things like the a this is a row a
+Until you get to the other side where it's row upside Down J
+So just some just some kind of weird quality issues. You know other things I've noticed
+[it's] just when you're inserting
+sometimes with the
+less expensive boards you know it can be a concealed little stiff that can feel like you're not getting as good a connection with the
+Higher quality boards
+It always feels like you're making a good connection every time but of course you want to weigh all of that against
+[costs] because the lower quality boards certainly are much less expensive [and]
+You know it may actually be better value to you to get the [lower-cost] ones depending on you know how much you're planning to use
+Them so I'm going to be aware [that] I've noticed is
+Just as I wiggle this connection here of the power connection
+You can see me or at least I can see here these leds are flickering a bit. Hopefully you can see that on the camera
+and
+you know that certainly suggests that the
+Connection [it] you know just [all] any of these connections on these bread boards are not going to be perfect
+and that's the the problem that we're sort of battling with with this power issue that I think a lot of people are seeing and
+One trick that I saw I think this was truly an [island] that
+Did this on his channel in which I definitely recommend [checking] out his channel
+He's working on a breadboard
+Computer of his of his own that is a bit different from this
+So I think it's a good as a compliment to this, but I definitely recommend checking that out
+I'll link it [down] below, but I think you know he
+Used one of these sort of standard header things and just connected three of them together like [this] for the positive and negative
+So connecting that to your usb power connector is going to give you a much more solid
+Connection into the breadboard and so I've actually found this to be a really great
+Set up here with this three wide connection because it's really solid I can you know wiggle that
+And I'm not seeing any of that flickering
+Everything even it also just seems to be a little bit brighter with with this so that's definitely helping a lot
+And then I'm just using the the 2 amp usb supply
+the 1 Amp works
+But it does cut out and it's probably not terribly good for it to keep doing that [so]
+[anyway], those are just a [few] tips that I've got that I've kind of found with as far as power for the computer
+But you know this is working. Just great

@@ -1,0 +1,247 @@
+So we've pretty much built most of our CPU, and the microcode has been programmed with a few different instructions
+So there's a LOAD A instruction, which will load the contents of memory into the A register,
+there's an ADD instruction, which will add something from memory
+to the contents of the A register and then put that result in the A register,
+we also have a subtract command which is very similar
+and then there's the output instruction, which will take the contents of the A register and output it to the display
+and finally we've got a halt instruction, which will just halt the clock when we're done executing our program.
+In this video, I want to add some new instructions to the instruction set for our CPU so that we can
+use the CPU to write more interesting or more complex programs.
+So as we saw in the last video, we're using an Arduino to program the EEPROMs with
+the microcode for the different instructions that we want our CPU to support.
+So we have a no operation (NOP), load A (LDA), add (ADD), subtract (SUB)
+output (OUT) and halt (HLT). So I want to add a couple commands to this, the first command I want to add is a
+Store A command (STA), and Store A is going to work basically like Load A, except in the opposite direction.
+So this is the architecture of our CPU, and the way that Load A works is,
+part of the instruction is the Load A command, right? That's the,
+0 0 0 1 is the first 4 bits of the instruction,
+but then the four least significant bits of the instruction are the memory address that we want to load into the A register
+and so, what our Load A instruction does is it puts that memory address out on the bus, and
+then reads that into the memory address register, so that the RAM is pointing at that location,
+then it takes the contents of RAM and moves them onto the bus
+and then reads that into the A register, and so those are the commands we have here. We have
+instruction register out (IO), memory address register in (MI), so that's instruction register out memory address register in
+then in the next clock cycle do RAM out, A in, so RAM out, A register in.
+So that's how the Load A works, Store A is going to work basically the same way
+So the Store A command is going to be 0 1 0 0
+That's the four most significant bits that goes into our instruction decoder
+But then the four least significant bits are going to be address
+into which we want to put the contents of the A register in RAM.
+And so, the first thing I want to do is put the instruction register, those four least significant bits, out on the bus,
+so that's instruction register out, and then read that into the memory address register,
+so memory address register in. So we can do that here.
+So that's the first part of this, is instruction register out (IO), memory address register in (MI)
+Now, the next clock cycle for the Store A command,
+instead of RAM out, A in, it's basically going to be opposite
+It's going to be A out, A register out, RAM in, so we want to take the contents of A register and put it into RAM
+It's just going to be A out (AO),
+RAM in (RI) and so if we compare
+the Load A and the Store A commands, they're very similar. So in both cases the first thing we do is,
+we point the memory address register at the appropriate address, and then for Load A we move the
+value from RAM to the A register, for Store A we move the value from the A register to RAM.
+So that's the Store A command.
+That's, that's it.
+The next instruction that I want to add is similar to Load A in that it's going to put a value into the A register,
+but the way that the Load A command works is it puts a value from RAM into the A register
+so if we say Load A 15, for example,
+as our instruction, then we're going to take the contents of RAM and put it into the A register.
+And another way to think of that is that's an indirect instruction, because
+when we say Load A 15 we're not putting a 15 into the A register,
+we're first putting the 15 into the memory address register,
+and then we're getting the contents of address location 15 and putting THAT in the A register.
+But sometimes it's useful to just put a particular value in the A register, not from RAM but just an immediate value
+So, if we say Load A 15, we want to just put a 15 in the A register
+And so I'm going to add a command to do that called Load Immediate
+so we'll call it Load Immediate, LDI for LoaD Immediate and really, what,
+what we want to do is, we want to take the contents of the instruction register, or at least the four least significant bits,
+because the first 4 bits are going to be the instruction itself so for Load Immediate those first 4 bits are 0 1 0 1
+so we're going to have that, but then the next 4 bits
+are going to be the value that we want to put in the A register, which means it is a very simple instruction because
+after the fetch cycle, after we've fetched the instruction that's in the instruction register,
+We've already got the value that we want to put in the A register right here, and if we do instruction register out,
+it's going to take the four least significant bits, and put them on the bus
+And then if we do A register in, then it'll read those from the bus.
+So, that's what we'll do, we'll do instruction register out (IO) and then A register in (AI).
+And that's actually all we need to do for that instruction. Everything else, we can just leave at zero,
+and we won't do anything else because once we put that value into the a register, we're done,
+that's all we want to do.
+Now, one interesting thing to point out with this instruction is, because
+we're only able to put the four least significant bits of the instruction register into the A register because,
+well, for one, that's all we have wired up to the bus, when we do instruction register out it's
+only those four bits that go out on the bus, and also that's because the first four bits are the instruction itself.
+So for Load Immediate, that's going to be 0 1 0 1, that's always going to be what that is. So what this means
+is that, when we do a Load Immediate we can only load a value from zero to fifteen into the A register
+We can't load, so if we wanted to load immediate, you know, fifty-two,
+we couldn't do that, because we can't represent fifty-two in four bits. So you might think, well, this is maybe not,
+you know, the most useful instruction and, and perhaps in some cases
+it's not, you know, some cases you might need to just put that 52 in RAM and use a Load A but I think it's
+still a useful instruction to have, because a lot of times in a program you'll want to initialize the
+A register to 0 or to 1 or something like that, and this Load Immediate instruction will, will let us do that.
+And the last instruction that I want to add today is a Jump instruction (JMP), and the Jump instruction is extremely useful, because,
+you know, all the programs we've run so far,
+you know, we've started at address 0, we've executed through the program, and
+at some point we get to the end of the program and we use the Halt command to halt the program,
+and that's it. A Jump instruction is going to let us add loops to our program, so that we can
+run a program in a loop that runs over and over again.
+And the way it's going to work is by updating the program counter.
+Because, remember, at the beginning of every instruction, when we load the next instruction to execute,
+we're loading it from RAM, but the address that we go to is whatever is in the program counter.
+So if we look at all of our instructions, they start out with memory address register in (MI), counter out (CO)
+and of course, counter out is the program counter, so that goes out into the memory address register,
+and then the second clock cycle of every instruction is RAM out (RO), instruction register in (II), and counter enable (CE)
+so, RAM out, instruction register in, that's fetching that instruction from RAM, putting it in the instruction register
+and then we go ahead and execute it in the
+following clock cycles, and then increment the program counter. So if the first instruction of our program is zero,
+then we increment this to one so that when we're done with the first instruction,
+then we load the one in the memory address register and fetch instruction one.
+And then we increment this to 2, so that the next time around will fetch instruction 2
+But you'll notice that for all of these commands, we're doing that Counter Enable which increments the program counter
+here, at the beginning of the instruction, so during the fetch cycle,
+then we execute whatever steps are appropriate for that, you know, particular instruction that we've loaded.
+Which means at this point if we change what's in the program counter, then when we finish executing that instruction,
+and want to go on to the next instruction, the next instruction is going to be whatever
+is going to be fetched from whatever address is in the program counter.
+So in order to do a jump, which is basically just changing the program counter,
+all we need to do is take the address we want to jump to, which is going to be part of our instructions, gonna
+be the low four least significant bits of our instruction, put that on the bus, read that into the program counter,
+which is a program counter in, or the Jump signal,
+and that will update the program counter so that when we finish that instruction, the next instruction we execute
+will be the instruction that we jumped to, not just the next one in memory.
+So again, this is a very simple instruction to write the microcode for
+because we're going to take the instruction register out and
+then set the Jump bit, which is essentially the program counter in,
+and that'll put the address that we want to jump to in the program counter, and we don't need to do anything else.
+So let's go ahead and reprogram our microcode EEPROMs with this new microcode that has these new instructions.
+Pull these out, put them into our Arduino EEPROM programmer
+And then I'll go ahead and upload this new code. Look at the serial monitor, and there we go
+that's the first one, and now I'll program the second EEPROM
+And I don't need to re-upload the code, I can just reset the Arduino, and there it goes programming the second one.
+And we're done!
+So I'll take these EEPROMs and put them back in our computer, hopefully in the right place, and let's give it a try.
+So let's try writing a program that uses these new instructions.
+So, I'm going to write something fairly simple that just puts a 0 in the A register and then
+adds 3 to that, and outputs the result, and then does that in a loop. So basically what I want to do is just,
+output all of the multiples of 3. So to start out, we want to start with a 0 in the A register
+and, you know we might be able to assume that this is going to start out as 0,
+but it'd be a good practice to initialize it to 0, and we can do that by using our Load Immediate command.
+So if we say, Load Immediate
+0, then that's going to put a 0 in the A register.
+Now, next we want to add 3 each time we go through this to the,
+to the result, and we don't have an Add Immediate,
+I'm not sure that that would be that useful of command, although
+I suppose you could add something like that, but without it, without anything like that when we use the add command,
+we're going to refer to a memory location, so if we say Add 15,
+then this is going to add the contents of memory location 15 to the A register, which we just loaded with a 0
+so if there's a 3 in
+in location 15, then we'll add a 3 to that Load Immediate, and then we want to output the result,
+and then we want to jump back to our Add command and just go in a loop here
+but what we can do instead of
+pre-populating this address location 15 with a 3, we can also
+Load that into that location ahead of time in our program. So what we could do is we could do a Load Immediate
+3, which puts a 3 in the A register, and then we could store
+the contents of the A register using a Store A command into
+location 15 so the Load Immediate 3, Store A 15 will put a 3 into address 15.
+Then we're going to load a 0 into the A register, and then add the contents of 15 to it
+So we're going to add 3 and output the results. This is going to output a 3, then if we do a jump
+and we just jump back to this add command,
+then that's going to add another 3 and output the result, and then add another 3 and output the result
+and that will do what we want. It'll output each of the multiples of 3.
+And so to figure out what we need to say here for our jump command,
+we need to know what address we want to jump to. So, if our program starts here,
+this is going to be address zero, this will be address one,
+address two, address three, address four
+address five. So our whole program is going to be five, er, six bytes long, 0 through 5,
+and then we want to jump back to address 3, so we say Jump 3
+then that'll load a 3 in the program counter, and the next command we execute will be the Add 15 again
+and then the output, and then we jump to 3
+it'll, you know,
+when we start the Jump 3 command it'll increment the program counter from 5 to 6 because normally we want to go on to instruction 6,
+but then during the jump command, we'll rewrite the program counter to 3,
+so that when we finish this command, the next command we execute will be
+from address 3 and we'll do the Add again
+and so this will just continuously loop and output all of the multiples of 3.
+So, this is the assembly language for our program that we want to write,
+now we need to convert that to the machine code, or the bytecode
+that we're actually going to program into the computer.
+So the first thing I'll do is take the addresses, because we need to know what address we're putting this in, and write those out in binary.
+So these are the addresses, and now for the instructions
+we need to look up each of the opcodes in our microcode.
+And so, if we come over here, we can see that load immediate is 0 1 0 1
+So that'll be the instruction for that, 0 1 0 1
+And then we're doing Load Immediate 3, so the operand here is 0 0 1 1, which is 3.
+So the next command is Store A, and so STA is 0 1 0 0
+0 1 0 0, and we're going to Store A 15, so address 15, so we're storing that 3 at address location 15.
+And the next command is Load Immediate 0. Well, Load Immediate is
+0 1 0 1 we already know that, that's what we used here
+And we're Loading Immediate 0 so we're putting a 0 into the A register. So there's our 0.
+The next command is Add 15, so Add,
+If we look at how we programmed our microcode, Add is 0 0 1 0
+0 0 1 0, so that's the machine code representation of the Add assembly language command,
+and then 15 is 1 1 1 1.
+And then output is 1 1 1 0.
+So, 1 1 1 0, and output doesn't take any parameters or anything like that, so we could put anything we want here,
+So we'll just put all zeroes, doesn't really matter though
+There's no part of the output command that actually looks at that.
+And then finally jump 3. So, the jump command is 0 1 1 0
+0 1 1 0, and then we want to jump to address 3. So 0 0 1 1 is 3.
+So this is assembled binary machine language for this program!
+So let's give this a try. We'll power up the computer and stop the clock,
+reset everything and go into programming mode,
+And I'll go ahead and enter the program into the computer one byte at a time, and I'll speed this part up So you don't have to wait for me to toggle in every byte.
+OK, and that's it, now I think I've got the whole thing programmed in correctly.
+So we'll go back into run mode and let's step through it and see how this works
+So, the first command is Load Immediate 3, and so we'll fetch that command
+So we have our Load Immediate here, 0 1 0 1, and then 3. And the way Load Immediate works is
+it just takes that 3 and puts it in the A register. So we have Instruction Register out, A in...
+And there we go, we put the 3 in the A register.
+And in the next two cycles, we don't do anything.
+Now we move on to our Store A 15 so Program Counter is at 1. So we're going to fetch from
+address 1, put that in the instruction register.
+And so Store A 15,
+We've got our Store A and our 15 here. So we take this 15, put it in our memory address register
+So now we're pointing at address 15 and of course right now, there's just junk in that memory location,
+For whatever happened to be there when we power the computer up
+But we want to take the contents of A and put it there, so we have A Out,
+and RAM In so that should take the contents of A, and write it into memory.
+So now we've stored that 3 in memory, at location 15.
+So next thing we're gonna do is another Load Immediate. So we'll fetch from address 2, and...
+Here we go, address 2 and we'll fetch that, and so now we have our load immediate 0 in our instruction register,
+which means we're just going to put that 0 into the A register.
+So there we go, we've initialized our A register with a 0, and now we want to start counting by 3, so we want to Add
+the contents of location 15, which has a 3 in it, so we're going to Add 15, so Add
+We're going to fetch that,
+And, of course we're at address fift- er, address 3, right? So, Program Counter's 3, so we're gonna go fetch
+the contents of 3, put that in the Instruction Register, so we have our 0 0 1 0 which is the
+Add opcode, and then 15, so if we look in address 15, we put that into our memory address register
+We've got the 3 there, and we want to add the 3 to the 0 that's in the A register
+so we put the 3 in the B register, and then we take the sum, and put that in the A register.
+And so that's our Add 15, so that's added the 3 there, and then we want to output that result.
+So we fetch the next command, which is our output, and we output the result, so there's a 3.
+Now we're going to move on to the jump command.
+And so, our Program Counter is pointed to address 5, so that we're going to execute from address 5,
+So we're going to fetch, um, the instruction from register 5. So we have Counter Out,
+Memory Address Register In, so Program Counter Out is going to go into our memory address register.
+So now we're looking at the contents of Memory Location 5,
+which is our Jump command. See, 0 1 1 0, and then those are 0 1 1 for the 3.
+So we'll put that into our Instruction Register, and you'll notice that we've also incremented our
+Program Counter, and so the Program Counter is now pointing at 6 because, normally we'd want to execute instruction 6 next,
+Except, in this case, We're not going to do that, because we're doing a jump.
+But the Program Counter is incremented to 6 so that when we finish this instruction, we would naturally load the next instruction from location 6.
+But, the way the Jump works is we're going to take the contents of the instruction register, which is, um,
+which is 3, because when we put stuff out on the bus we only have these 4 bits hooked up
+So that three will go out on the bus, which you see on the bus, a three,
+and then we have our Jump bit set down here, which means that the Program Counter is going to read in that three
+So instead of six being the next instruction we execute,
+It's going to be three, and that's how the Jump works, so that means the next time through
+We're going to load from three, so we jumped back to instruction three.
+And so we don't do anything else for the rest of that instruction,
+And so now we're back at our fetch cycle, and the first part of our fetch cycle is Program Counter Out,
+Memory address register in so we're going to take our Program Counter 3 and put that into our Memory Address Register.
+And so we're actually loading this add 15 command again
+And so we'll load that into our instruction register
+and then we'll go through and do our Add, and so here's our six in the A register...
+And then we go ahead and output that. And so there's our output. And so if we just let this program run,
+It'll go ahead and loop through these last three commands, adding the contents of location 15,
+which is a three, each time and outputting the result and so, we see the output counting multiples of three.
+And it's just going to keep doing this forever. We can speed it up, and it goes even faster,
+But it's still counting multiples of three.
