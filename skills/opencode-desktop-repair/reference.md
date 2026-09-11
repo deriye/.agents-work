@@ -104,12 +104,38 @@ substring you are changing** so every other byte is preserved:
 $path = "$env:APPDATA\ai.opencode.desktop\opencode.global.dat"
 # back up first
 Copy-Item $path "$path.bak-$(Get-Date -f yyyyMMdd-HHmmss)"
-$raw = Get-Content $path -Raw
+$raw = [IO.File]::ReadAllText($path)                          # preserves bytes/encoding
 $raw = $raw.Replace($oldExactSubstring, $newExactSubstring)   # targeted, key-preserving
-Set-Content $path -Value $raw -Encoding UTF8 -NoNewline
+# write WITHOUT a BOM, LF endings -- matches how the app writes these files
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[IO.File]::WriteAllText($path, $raw, $utf8NoBom)
 ```
 
 Verify unaffected keys are byte-identical afterward (compare against the backup).
+
+### Never write these files with a BOM (the trap we hit)
+
+**`Set-Content -Encoding UTF8` on PowerShell 5.1 prepends a UTF-8 BOM
+(`EF BB BF`) and uses CRLF.** The desktop app writes `opencode.global.dat` /
+`opencode.window.*.dat` with **no BOM and LF**. A BOM'd file makes the app:
+
+1. fail to parse the file on startup -> empty project sidebar;
+2. **refuse to overwrite** the file it could not read -> the write timestamp
+   freezes at the moment of your edit, and any project the user re-adds is lost
+   on the next launch (the classic "I re-add my projects every time" symptom).
+
+Detect and confirm:
+
+```powershell
+$b = [IO.File]::ReadAllBytes($path)
+$hasBom = ($b.Length -ge 3 -and $b[0]-eq 0xEF -and $b[1]-eq 0xBB -and $b[2]-eq 0xBF)
+```
+
+Fix by rewriting without a BOM (strip the leading 3 bytes, normalize CRLF->LF,
+`WriteAllText` with `UTF8Encoding($false)`) — this is exactly what
+`scripts/fix-global-bom.ps1` does. Prevent it by always using the
+`WriteAllText` + `UTF8Encoding($false)` pattern above, never
+`Set-Content -Encoding UTF8`, for any `.dat`/JSON state file.
 
 ## PowerShell 5.1 gotchas
 
